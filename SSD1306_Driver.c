@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    SSD1306_Driver.c
   * @author  Lightcone & 江协科技
-  * @version V2.0.1
+  * @version V2.0.2
   * @date    2024-03-21
   * @brief   OLED SSD1306硬件驱动层
   ******************************************************************************
@@ -10,38 +10,50 @@
 #include "STM32Device.h"
 #include "SSD1306_Driver.h"
 
-#define OLED_W_D0(x)		GPIO_WriteBit(OLED_SPI_Struct_ptr->D0_GPIO, OLED_SPI_Struct_ptr->D0_Pin, (BitAction)(x))
-#define OLED_W_D1(x)		GPIO_WriteBit(OLED_SPI_Struct_ptr->D1_GPIO, OLED_SPI_Struct_ptr->D1_Pin, (BitAction)(x))
-#define OLED_W_RES(x)		GPIO_WriteBit(OLED_SPI_Struct_ptr->RES_GPIO, OLED_SPI_Struct_ptr->RES_Pin, (BitAction)(x))
-#define OLED_W_DC(x)		GPIO_WriteBit(OLED_SPI_Struct_ptr->DC_GPIO, OLED_SPI_Struct_ptr->DC_Pin, (BitAction)(x))
-#define OLED_W_CS(x)		OLED_SPI_Struct_ptr->CS_Handler()
+// SSD1306_Driver.c文件内部使用宏函数
+#define OLED_W_D0(x)		GPIO_WriteBit(SSD1306_Struct_ptr->D0_GPIO, SSD1306_Struct_ptr->D0_Pin, (BitAction)(x))
+#define OLED_W_D1(x)		GPIO_WriteBit(SSD1306_Struct_ptr->D1_GPIO, SSD1306_Struct_ptr->D1_Pin, (BitAction)(x))
+#define OLED_W_RES(x)		GPIO_WriteBit(SSD1306_Struct_ptr->RES_GPIO, SSD1306_Struct_ptr->RES_Pin, (BitAction)(x))
+#define OLED_W_DC(x)		GPIO_WriteBit(SSD1306_Struct_ptr->DC_GPIO, SSD1306_Struct_ptr->DC_Pin, (BitAction)(x))
+#define OLED_W_CS(x)		SSD1306_Struct_ptr->CS_Handler()
+
+#define SSD1306_SendByte(Byte) SSD1306_SendByte_RAW(SSD1306_Struct_ptr,Byte)
+#define OLED_WriteCommand(Command) OLED_WriteCommand_RAW(SSD1306_Struct_ptr,Command)
+#define OLED_WriteData(Data_ptr,Count) OLED_WriteData_RAW(SSD1306_Struct_ptr,Data_ptr,Count)
+#define OLED_SetCursor(Page,X) OLED_SetCursor_RAW(SSD1306_Struct_ptr,Page,X)
+#define OLED_Update() OLED_Update_RAW(SSD1306_Struct_ptr)
+#define OLED_UpdateArea(X,Y,Width,Height) OLED_UpdateArea_RAW(SSD1306_Struct_ptr,X,Y,Width,Height)
+#define OLED_Clear() OLED_Clear_RAW(SSD1306_Struct_ptr)
+
+#define OLED_DisplayBuf SSD1306_Struct_ptr->DisplayBuf
+
 
 /*引脚初始化*/
-void OLED_SPI_Init(OLED_SPI* OLED_SPI_Struct_ptr)
+void SSD1306_Pin_Init(SSD1306* SSD1306_Struct_ptr)
 {
-	RCC_APB2PeriphClockCmd(to_RCC_APB2Periph(OLED_SPI_Struct_ptr->D0_GPIO), ENABLE);
-	RCC_APB2PeriphClockCmd(to_RCC_APB2Periph(OLED_SPI_Struct_ptr->D1_GPIO), ENABLE);
-	RCC_APB2PeriphClockCmd(to_RCC_APB2Periph(OLED_SPI_Struct_ptr->RES_GPIO), ENABLE);
-	RCC_APB2PeriphClockCmd(to_RCC_APB2Periph(OLED_SPI_Struct_ptr->DC_GPIO), ENABLE);
-	//RCC_APB2PeriphClockCmd(to_RCC_APB2Periph(OLED_SPI_Struct_ptr->CS_GPIO), ENABLE);
+	RCC_APB2PeriphClockCmd(to_RCC_APB2Periph(SSD1306_Struct_ptr->D0_GPIO), ENABLE);
+	RCC_APB2PeriphClockCmd(to_RCC_APB2Periph(SSD1306_Struct_ptr->D1_GPIO), ENABLE);
+	RCC_APB2PeriphClockCmd(to_RCC_APB2Periph(SSD1306_Struct_ptr->RES_GPIO), ENABLE);
+	RCC_APB2PeriphClockCmd(to_RCC_APB2Periph(SSD1306_Struct_ptr->DC_GPIO), ENABLE);
+	//RCC_APB2PeriphClockCmd(to_RCC_APB2Periph(SSD1306_Struct_ptr->CS_GPIO), ENABLE);
 
 	
 	GPIO_InitTypeDef GPIO_InitStructure;
  	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 
-	GPIO_InitStructure.GPIO_Pin = OLED_SPI_Struct_ptr->D0_Pin;
- 	GPIO_Init(OLED_SPI_Struct_ptr->D0_GPIO, &GPIO_InitStructure);
-	GPIO_InitStructure.GPIO_Pin = OLED_SPI_Struct_ptr->D1_Pin;
- 	GPIO_Init(OLED_SPI_Struct_ptr->D1_GPIO, &GPIO_InitStructure);
-	GPIO_InitStructure.GPIO_Pin = OLED_SPI_Struct_ptr->DC_Pin;
- 	GPIO_Init(OLED_SPI_Struct_ptr->DC_GPIO, &GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Pin = SSD1306_Struct_ptr->D0_Pin;
+ 	GPIO_Init(SSD1306_Struct_ptr->D0_GPIO, &GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Pin = SSD1306_Struct_ptr->D1_Pin;
+ 	GPIO_Init(SSD1306_Struct_ptr->D1_GPIO, &GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Pin = SSD1306_Struct_ptr->DC_Pin;
+ 	GPIO_Init(SSD1306_Struct_ptr->DC_GPIO, &GPIO_InitStructure);
 	/*
-	GPIO_InitStructure.GPIO_Pin = OLED_SPI_Struct_ptr->CS_Pin;
- 	GPIO_Init(OLED_SPI_Struct_ptr->CS_GPIO, &GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Pin = SSD1306_Struct_ptr->CS_Pin;
+ 	GPIO_Init(SSD1306_Struct_ptr->CS_GPIO, &GPIO_InitStructure);
 	*/
-	GPIO_InitStructure.GPIO_Pin = OLED_SPI_Struct_ptr->RES_Pin;
- 	GPIO_Init(OLED_SPI_Struct_ptr->RES_GPIO, &GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Pin = SSD1306_Struct_ptr->RES_Pin;
+ 	GPIO_Init(SSD1306_Struct_ptr->RES_GPIO, &GPIO_InitStructure);
 	
 	OLED_W_D0(1);
 	
@@ -49,7 +61,7 @@ void OLED_SPI_Init(OLED_SPI* OLED_SPI_Struct_ptr)
 	OLED_W_RES(0);
 	OLED_W_RES(1);
 	OLED_W_DC(1);
-	//OLED_W_CS(OLED_SPI_Struct_ptr,(BitAction)1);
+	//OLED_W_CS(SSD1306_Struct_ptr,(BitAction)1);
 }
 
 /*通信协议*********************/
@@ -59,7 +71,7 @@ void OLED_SPI_Init(OLED_SPI* OLED_SPI_Struct_ptr)
   * 参    数：Byte 要发送的一个字节数据，范围：0x00~0xFF
   * 返 回 值：无
   */
-void OLED_SPI_SendByte_RAW(OLED_SPI* OLED_SPI_Struct_ptr,uint8_t Byte)
+void SSD1306_SendByte_RAW(SSD1306* SSD1306_Struct_ptr,uint8_t Byte)
 {
 	uint8_t i;
 	
@@ -74,28 +86,26 @@ void OLED_SPI_SendByte_RAW(OLED_SPI* OLED_SPI_Struct_ptr,uint8_t Byte)
 	}
 }
 
-#define OLED_SPI_SendByte(Byte) OLED_SPI_SendByte_RAW(OLED_SPI_Struct_ptr,Byte)
 /**
   * 函    数：OLED写命令
   * 参    数：Command 要写入的命令值，范围：0x00~0xFF
   * 返 回 值：无
   */
-void OLED_WriteCommand_RAW(OLED_SPI* OLED_SPI_Struct_ptr,uint8_t Command)
+void OLED_WriteCommand_RAW(SSD1306* SSD1306_Struct_ptr,uint8_t Command)
 {
 	OLED_W_CS(0);					//拉低CS，开始通信
 	OLED_W_DC(0);					//拉低DC，表示即将发送命令
-	OLED_SPI_SendByte(Command);		//写入指定命令
+	SSD1306_SendByte(Command);		//写入指定命令
 	OLED_W_CS(1);					//拉高CS，结束通信
 }
 
-#define OLED_WriteCommand(Command) OLED_WriteCommand_RAW(OLED_SPI_Struct_ptr,Command)
 /**
   * 函    数：OLED写数据
   * 参    数：Data 要写入数据的起始地址
   * 参    数：Count 要写入数据的数量
   * 返 回 值：无
   */
-void OLED_WriteData_RAW(OLED_SPI* OLED_SPI_Struct_ptr,uint8_t *Data, uint8_t Count)
+void OLED_WriteData_RAW(SSD1306* SSD1306_Struct_ptr,uint8_t *Data, uint8_t Count)
 {
 	uint8_t i;
 	
@@ -104,12 +114,11 @@ void OLED_WriteData_RAW(OLED_SPI* OLED_SPI_Struct_ptr,uint8_t *Data, uint8_t Cou
 	/*循环Count次，进行连续的数据写入*/
 	for (i = 0; i < Count; i ++)
 	{
-		OLED_SPI_SendByte(Data[i]);	//依次发送Data的每一个数据
+		SSD1306_SendByte(Data[i]);	//依次发送Data的每一个数据
 	}
 	OLED_W_CS(1);					//拉高CS，结束通信
 }
 
-#define OLED_WriteData(Data_ptr,Count) OLED_WriteData_RAW(OLED_SPI_Struct_ptr,Data_ptr,Count)
 /*********************通信协议*/
 
 /*功能函数*********************/
@@ -121,7 +130,7 @@ void OLED_WriteData_RAW(OLED_SPI* OLED_SPI_Struct_ptr,uint8_t *Data, uint8_t Cou
   * 返 回 值：无
   * 说    明：OLED默认的Y轴，只能8个Bit为一组写入，即1页等于8个Y轴坐标
   */
-void OLED_SetCursor_RAW(OLED_SPI* OLED_SPI_Struct_ptr,uint8_t Page, uint8_t X)
+void OLED_SetCursor_RAW(SSD1306* SSD1306_Struct_ptr,uint8_t Page, uint8_t X)
 {
 	/*如果使用此程序驱动1.3寸的OLED显示屏，则需要解除此注释*/
 	/*因为1.3寸的OLED驱动芯片（SH1106）有132列*/
@@ -144,7 +153,7 @@ void OLED_SetCursor_RAW(OLED_SPI* OLED_SPI_Struct_ptr,uint8_t Page, uint8_t X)
   *           才会将显存数组的数据发送到OLED硬件，进行显示
   *           故调用显示函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_Update_RAW(OLED_SPI* OLED_SPI_Struct_ptr)
+void OLED_Update_RAW(SSD1306* SSD1306_Struct_ptr)
 {
 	uint8_t j;
 	/*遍历每一页*/
@@ -171,7 +180,7 @@ void OLED_Update_RAW(OLED_SPI* OLED_SPI_Struct_ptr)
   *           才会将显存数组的数据发送到OLED硬件，进行显示
   *           故调用显示函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_UpdateArea_RAW(OLED_SPI* OLED_SPI_Struct_ptr,uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height)
+void OLED_UpdateArea_RAW(SSD1306* SSD1306_Struct_ptr,uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height)
 {
 	uint8_t j;
 	
@@ -198,7 +207,7 @@ void OLED_UpdateArea_RAW(OLED_SPI* OLED_SPI_Struct_ptr,uint8_t X, uint8_t Y, uin
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_Clear_RAW(OLED_SPI* OLED_SPI_Struct_ptr)
+void OLED_Clear_RAW(SSD1306* SSD1306_Struct_ptr)
 {
 	uint8_t i, j;
 	for (j = 0; j < 8; j ++)				//遍历8页
@@ -219,9 +228,9 @@ void OLED_Clear_RAW(OLED_SPI* OLED_SPI_Struct_ptr)
   * 返 回 值：无
   * 说    明：使用前，需要调用此初始化函数
   */
-void OLED_Init(OLED_SPI* OLED_SPI_Struct_ptr)
+void SSD1306_Init(SSD1306* SSD1306_Struct_ptr)
 {
-	OLED_SPI_Init(OLED_SPI_Struct_ptr);			//先调用底层的端口初始化
+	SSD1306_Pin_Init(SSD1306_Struct_ptr);			//先调用底层的端口初始化
 	
 	/*写入一系列的命令，对OLED进行初始化配置*/
 	OLED_WriteCommand(0xAE);	//设置显示开启/关闭，0xAE关闭，0xAF开启
