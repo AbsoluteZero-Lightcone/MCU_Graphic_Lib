@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    Graphic.h
   * @author  Lightcone
-  * @version V1.0.2
+  * @version V1.0.3
   * @date    2024-03-21
   * @brief   图形显示库
   ******************************************************************************
@@ -11,8 +11,20 @@
 #ifndef __GRAPHIC_H
 #define __GRAPHIC_H
 
-#include "stdint.h"
+#include <stdint.h>
 
+/*参数宏定义*********************/
+
+/*FontSize参数取值*/
+/*此参数值不仅用于判断，而且用于计算横向字符偏移，默认值为字体像素宽度*/
+#define OLED_8X16				8
+#define OLED_6X8				6
+
+/*IsFilled参数数值*/
+#define OLED_UNFILLED			0
+#define OLED_FILLED				1
+
+/*********************参数宏定义*/
 typedef struct{
 	void (*Screen_SetCursor_Callback)(uint8_t x,uint8_t y);
 	void (*Screen_Update_Callback)(void);
