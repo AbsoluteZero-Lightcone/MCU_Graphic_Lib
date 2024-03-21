@@ -4,8 +4,10 @@
   * @author  Lightcone
   * @version V1.0.0
   * @date    2024-03-21
-  * @brief   显存管理层
+  * @brief   显示缓冲区存储管理接口
   ******************************************************************************
   */
+#include "Graphic.h"
+
 
 /******************* Absolute Zero Studio - Lightcone **********END OF FILE****/
