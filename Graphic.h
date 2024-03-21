@@ -33,7 +33,6 @@ typedef struct{
 	uint8_t Screen_X;
 	uint8_t Screen_Y;
 }Graphic_TypeDef;
-
 #define SetCursor(a,b) Graphic_ptr->Screen_SetCursor_Callback(a,b)
 #define Update()       Graphic_ptr->Screen_Update_Callback(Graphic_ptr->Display_Buffer);
 

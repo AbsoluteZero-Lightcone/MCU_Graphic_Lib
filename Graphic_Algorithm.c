@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    Graphic_Algorithm.c
   * @author  Lightcone
-  * @version V1.0.2
+  * @version V1.0.3
   * @date    2024-03-21
   * @brief   图形显示算法层
   ******************************************************************************
@@ -16,7 +16,7 @@
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_Clear(void)
+void OLED_Clear(Graphic_TypeDef*Graphic_ptr)
 {
 	uint8_t i, j;
 	for (j = 0; j < 8; j ++)				//遍历8页
@@ -37,7 +37,7 @@ void OLED_Clear(void)
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_ClearArea(uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height)
+void OLED_ClearArea(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height)
 {
 	uint8_t i, j;
 	
@@ -62,7 +62,7 @@ void OLED_ClearArea(uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height)
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_Reverse(void)
+void OLED_Reverse(Graphic_TypeDef*Graphic_ptr)
 {
 	uint8_t i, j;
 	for (j = 0; j < 8; j ++)				//遍历8页
@@ -83,7 +83,7 @@ void OLED_Reverse(void)
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_ReverseArea(uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height)
+void OLED_ReverseArea(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height)
 {
 	uint8_t i, j;
 	
@@ -113,7 +113,7 @@ void OLED_ReverseArea(uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height)
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_ShowChar(uint8_t X, uint8_t Y, char Char, uint8_t FontSize)
+void OLED_ShowChar(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, char Char, uint8_t FontSize)
 {
 	if (FontSize == OLED_8X16)		//字体为宽8像素，高16像素
 	{
@@ -138,7 +138,7 @@ void OLED_ShowChar(uint8_t X, uint8_t Y, char Char, uint8_t FontSize)
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_ShowString(uint8_t X, uint8_t Y, char *String, uint8_t FontSize)
+void OLED_ShowString(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, char *String, uint8_t FontSize)
 {
 	uint8_t i;
 	for (i = 0; String[i] != '\0'; i++)		//遍历字符串的每个字符
@@ -160,7 +160,7 @@ void OLED_ShowString(uint8_t X, uint8_t Y, char *String, uint8_t FontSize)
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_ShowNum(uint8_t X, uint8_t Y, uint32_t Number, uint8_t Length, uint8_t FontSize)
+void OLED_ShowNum(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint32_t Number, uint8_t Length, uint8_t FontSize)
 {
 	uint8_t i;
 	for (i = 0; i < Length; i++)		//遍历数字的每一位							
@@ -184,7 +184,7 @@ void OLED_ShowNum(uint8_t X, uint8_t Y, uint32_t Number, uint8_t Length, uint8_t
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_ShowSignedNum(uint8_t X, uint8_t Y, int32_t Number, uint8_t Length, uint8_t FontSize)
+void OLED_ShowSignedNum(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, int32_t Number, uint8_t Length, uint8_t FontSize)
 {
 	uint8_t i;
 	uint32_t Number1;
@@ -221,7 +221,7 @@ void OLED_ShowSignedNum(uint8_t X, uint8_t Y, int32_t Number, uint8_t Length, ui
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_ShowHexNum(uint8_t X, uint8_t Y, uint32_t Number, uint8_t Length, uint8_t FontSize)
+void OLED_ShowHexNum(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint32_t Number, uint8_t Length, uint8_t FontSize)
 {
 	uint8_t i, SingleNumber;
 	for (i = 0; i < Length; i++)		//遍历数字的每一位
@@ -256,7 +256,7 @@ void OLED_ShowHexNum(uint8_t X, uint8_t Y, uint32_t Number, uint8_t Length, uint
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_ShowBinNum(uint8_t X, uint8_t Y, uint32_t Number, uint8_t Length, uint8_t FontSize)
+void OLED_ShowBinNum(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint32_t Number, uint8_t Length, uint8_t FontSize)
 {
 	uint8_t i;
 	for (i = 0; i < Length; i++)		//遍历数字的每一位	
@@ -281,7 +281,7 @@ void OLED_ShowBinNum(uint8_t X, uint8_t Y, uint32_t Number, uint8_t Length, uint
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_ShowFloatNum(uint8_t X, uint8_t Y, double Number, uint8_t IntLength, uint8_t FraLength, uint8_t FontSize)
+void OLED_ShowFloatNum(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, double Number, uint8_t IntLength, uint8_t FraLength, uint8_t FontSize)
 {
 	uint32_t PowNum, IntNum, FraNum;
 	
@@ -322,7 +322,7 @@ void OLED_ShowFloatNum(uint8_t X, uint8_t Y, double Number, uint8_t IntLength, u
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_ShowChinese(uint8_t X, uint8_t Y, char *Chinese)
+void OLED_ShowChinese(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, char *Chinese)
 {
 	uint8_t pChinese = 0;
 	uint8_t pIndex;
@@ -366,7 +366,7 @@ void OLED_ShowChinese(uint8_t X, uint8_t Y, char *Chinese)
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_ShowImage(uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height, const uint8_t *Image)
+void OLED_ShowImage(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height, const uint8_t *Image)
 {
 	uint8_t i, j;
 	
@@ -413,7 +413,7 @@ void OLED_ShowImage(uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height, const u
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_Printf(uint8_t X, uint8_t Y, uint8_t FontSize, char *format, ...)
+void OLED_Printf(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t FontSize, char *format, ...)
 {
 	char String[30];						//定义字符数组
 	va_list arg;							//定义可变参数列表数据类型的变量arg
@@ -430,7 +430,7 @@ void OLED_Printf(uint8_t X, uint8_t Y, uint8_t FontSize, char *format, ...)
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_DrawPoint(uint8_t X, uint8_t Y)
+void OLED_DrawPoint(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y)
 {
 	/*参数检查，保证指定位置不会超出屏幕范围*/
 	if (X > 127) {return;}
@@ -446,7 +446,7 @@ void OLED_DrawPoint(uint8_t X, uint8_t Y)
   * 参    数：Y 指定点的纵坐标，范围：0~63
   * 返 回 值：指定位置点是否处于点亮状态，1：点亮，0：熄灭
   */
-uint8_t OLED_GetPoint(uint8_t X, uint8_t Y)
+uint8_t OLED_GetPoint(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y)
 {
 	/*参数检查，保证指定位置不会超出屏幕范围*/
 	if (X > 127) {return 0;}
@@ -470,7 +470,7 @@ uint8_t OLED_GetPoint(uint8_t X, uint8_t Y)
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_DrawLine(uint8_t X0, uint8_t Y0, uint8_t X1, uint8_t Y1)
+void OLED_DrawLine(Graphic_TypeDef*Graphic_ptr,uint8_t X0, uint8_t Y0, uint8_t X1, uint8_t Y1)
 {
 	int16_t x, y, dx, dy, d, incrE, incrNE, temp;
 	int16_t x0 = X0, y0 = Y0, x1 = X1, y1 = Y1;
@@ -584,7 +584,7 @@ void OLED_DrawLine(uint8_t X0, uint8_t Y0, uint8_t X1, uint8_t Y1)
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_DrawRectangle(uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height, uint8_t IsFilled)
+void OLED_DrawRectangle(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height, uint8_t IsFilled)
 {
 	uint8_t i, j;
 	if (!IsFilled)		//指定矩形不填充
@@ -631,7 +631,7 @@ void OLED_DrawRectangle(uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height, uin
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_DrawTriangle(uint8_t X0, uint8_t Y0, uint8_t X1, uint8_t Y1, uint8_t X2, uint8_t Y2, uint8_t IsFilled)
+void OLED_DrawTriangle(Graphic_TypeDef*Graphic_ptr,uint8_t X0, uint8_t Y0, uint8_t X1, uint8_t Y1, uint8_t X2, uint8_t Y2, uint8_t IsFilled)
 {
 	uint8_t minx = X0, miny = Y0, maxx = X0, maxy = Y0;
 	uint8_t i, j;
@@ -686,7 +686,7 @@ void OLED_DrawTriangle(uint8_t X0, uint8_t Y0, uint8_t X1, uint8_t Y1, uint8_t X
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_DrawCircle(uint8_t X, uint8_t Y, uint8_t Radius, uint8_t IsFilled)
+void OLED_DrawCircle(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t Radius, uint8_t IsFilled)
 {
 	int16_t x, y, d, j;
 	
@@ -770,7 +770,7 @@ void OLED_DrawCircle(uint8_t X, uint8_t Y, uint8_t Radius, uint8_t IsFilled)
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_DrawEllipse(uint8_t X, uint8_t Y, uint8_t A, uint8_t B, uint8_t IsFilled)
+void OLED_DrawEllipse(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t A, uint8_t B, uint8_t IsFilled)
 {
 	int16_t x, y, j;
 	int16_t a = A, b = B;
@@ -883,7 +883,7 @@ void OLED_DrawEllipse(uint8_t X, uint8_t Y, uint8_t A, uint8_t B, uint8_t IsFill
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_DrawArc(uint8_t X, uint8_t Y, uint8_t Radius, int16_t StartAngle, int16_t EndAngle, uint8_t IsFilled)
+void OLED_DrawArc(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t Radius, int16_t StartAngle, int16_t EndAngle, uint8_t IsFilled)
 {
 	int16_t x, y, d, j;
 	
