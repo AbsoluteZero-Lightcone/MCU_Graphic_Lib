@@ -25,10 +25,10 @@ void OLED_SetCursor_RAW(SSD1306* SSD1306_Struct_ptr,uint8_t Page, uint8_t X);
 void OLED_Update_RAW(SSD1306* SSD1306_Struct_ptr);
 void OLED_UpdateArea_RAW(SSD1306* SSD1306_Struct_ptr,uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height);
 void OLED_Clear_RAW(SSD1306* SSD1306_Struct_ptr);
-// 导出宏函数
-#define OLED_SetCursor(Page,X) OLED_SetCursor_RAW(SSD1306_Struct_ptr,Page,X)
-#define OLED_Update() OLED_Update_RAW(SSD1306_Struct_ptr)
-#define OLED_UpdateArea(X,Y,Width,Height) OLED_UpdateArea_RAW(SSD1306_Struct_ptr,X,Y,Width,Height)
-#define OLED_Clear() OLED_Clear_RAW(SSD1306_Struct_ptr)
+// 导出别名宏函数
+#define OLED_SetCursor(SSD1306_Struct_ptr,Page,X) OLED_SetCursor_RAW(SSD1306_Struct_ptr,Page,X)
+#define OLED_Update(SSD1306_Struct_ptr) OLED_Update_RAW(SSD1306_Struct_ptr)
+#define OLED_UpdateArea(SSD1306_Struct_ptr,X,Y,Width,Height) OLED_UpdateArea_RAW(SSD1306_Struct_ptr,X,Y,Width,Height)
+#define OLED_Clear(SSD1306_Struct_ptr) OLED_Clear_RAW(SSD1306_Struct_ptr)
 #endif /* __SSD1306_DRIVER_H */
 /******************* Absolute Zero Studio - Lightcone **********END OF FILE****/
