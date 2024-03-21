@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    Graphic_Algorithm.c
   * @author  Lightcone
-  * @version V1.0.5
+  * @version V1.1.0
   * @date    2024-03-21
   * @brief   图形显示算法层
   ******************************************************************************
@@ -23,6 +23,8 @@
 
 #define BIT_PER_PAGE 8
 
+// Basic Graphic Display
+
 /**
   * 函    数：将OLED显存数组全部清零
   * 参    数：无
@@ -32,7 +34,7 @@
 void Graphic_Clear(Graphic_TypeDef*Graphic_ptr)
 {
 	uint8_t i, j;
-	for (j = 0; j < Graphic_ptr->Screen_Page; j ++)				//遍历8页
+	for (j = 0; j < Graphic_ptr->Screen_Page; j ++)				//遍历Graphic_ptr->Screen_Page页
 	{
 		for (i = 0; i < Graphic_ptr->Screen_X; i ++)			//遍历Graphic_ptr->Screen_X列
 		{
@@ -64,7 +66,7 @@ void Graphic_ClearArea(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t
 	{
 		for (i = X; i < X + Width; i ++)	//遍历指定列
 		{
-			Graphic_ptr->DisplayBuf[j / BIT_PER_PAGE][i] &= ~(0x01 << (j % 8));	//将显存数组指定数据清零
+			Graphic_ptr->DisplayBuf[j / BIT_PER_PAGE][i] &= ~(0x01 << (j % BIT_PER_PAGE));	//将显存数组指定数据清零
 		}
 	}
 }
@@ -110,7 +112,52 @@ void Graphic_ReverseArea(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8
 	{
 		for (i = X; i < X + Width; i ++)	//遍历指定列
 		{
-			Graphic_ptr->DisplayBuf[j / BIT_PER_PAGE][i] ^= 0x01 << (j % 8);	//将显存数组指定数据取反
+			Graphic_ptr->DisplayBuf[j / BIT_PER_PAGE][i] ^= 0x01 << (j % BIT_PER_PAGE);	//将显存数组指定数据取反
+		}
+	}
+}
+
+/**
+  * 函    数：OLED显示图像
+  * 参    数：X 指定图像左上角的横坐标，范围：0~Graphic_ptr->Screen_X-1
+  * 参    数：Y 指定图像左上角的纵坐标，范围：0~Graphic_ptr->Screen_Y-1
+  * 参    数：Width 指定图像的宽度，范围：0~Graphic_ptr->Screen_X
+  * 参    数：Height 指定图像的高度，范围：0~Graphic_ptr->Screen_Y
+  * 参    数：Image 指定要显示的图像
+  * 返 回 值：无
+  * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
+  */
+void Graphic_ShowImage(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height, const uint8_t *Image)
+{
+	uint8_t i, j;
+	
+	/*参数检查，保证指定图像不会超出屏幕范围*/
+	if (X > Graphic_ptr->Screen_X-1) {return;}
+	if (Y > Graphic_ptr->Screen_Y-1) {return;}
+	
+	/*将图像所在区域清空*/
+	Graphic_ClearArea(Graphic_ptr,X, Y, Width, Height);
+	
+	/*遍历指定图像涉及的相关页*/
+	/*(Height - 1) / BIT_PER_PAGE + 1的目的是Height / BIT_PER_PAGE并向上取整*/
+	for (j = 0; j < (Height - 1) / BIT_PER_PAGE + 1; j ++)
+	{
+		/*遍历指定图像涉及的相关列*/
+		for (i = 0; i < Width; i ++)
+		{
+			/*超出边界，则跳过显示*/
+			if (X + i > Graphic_ptr->Screen_X-1) {break;}
+			if (Y / BIT_PER_PAGE + j > Graphic_ptr->Screen_Page-1) {return;}
+			
+			/*显示图像在当前页的内容*/
+			Graphic_ptr->DisplayBuf[Y / BIT_PER_PAGE + j][X + i] |= Image[j * Width + i] << (Y % BIT_PER_PAGE);
+			
+			/*超出边界，则跳过显示*/
+			/*使用continue的目的是，下一页超出边界时，上一页的后续内容还需要继续显示*/
+			if (Y / BIT_PER_PAGE + j + 1 > Graphic_ptr->Screen_Page-1) {continue;}
+			
+			/*显示图像在下一页的内容*/
+			Graphic_ptr->DisplayBuf[Y / BIT_PER_PAGE + j + 1][X + i] |= Image[j * Width + i] >> (BIT_PER_PAGE - Y % BIT_PER_PAGE);
 		}
 	}
 }
@@ -139,6 +186,13 @@ void Graphic_ShowChar(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, char Cha
 		Graphic_ShowImage(Graphic_ptr,X, Y, 6, 8, Graphic_F6x8[Char - ' ']);
 	}
 }
+
+
+// Generative Graphic Interface
+
+
+
+// Complex Graphic Display
 
 /**
   * 函    数：OLED显示字符串
@@ -368,52 +422,6 @@ void Graphic_ShowChinese(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, char 
 		}
 	}
 }
-
-/**
-  * 函    数：OLED显示图像
-  * 参    数：X 指定图像左上角的横坐标，范围：0~Graphic_ptr->Screen_X-1
-  * 参    数：Y 指定图像左上角的纵坐标，范围：0~Graphic_ptr->Screen_Y-1
-  * 参    数：Width 指定图像的宽度，范围：0~Graphic_ptr->Screen_X
-  * 参    数：Height 指定图像的高度，范围：0~Graphic_ptr->Screen_Y
-  * 参    数：Image 指定要显示的图像
-  * 返 回 值：无
-  * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
-  */
-void Graphic_ShowImage(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height, const uint8_t *Image)
-{
-	uint8_t i, j;
-	
-	/*参数检查，保证指定图像不会超出屏幕范围*/
-	if (X > Graphic_ptr->Screen_X-1) {return;}
-	if (Y > Graphic_ptr->Screen_Y-1) {return;}
-	
-	/*将图像所在区域清空*/
-	Graphic_ClearArea(Graphic_ptr,X, Y, Width, Height);
-	
-	/*遍历指定图像涉及的相关页*/
-	/*(Height - 1) / 8 + 1的目的是Height / 8并向上取整*/
-	for (j = 0; j < (Height - 1) / 8 + 1; j ++)
-	{
-		/*遍历指定图像涉及的相关列*/
-		for (i = 0; i < Width; i ++)
-		{
-			/*超出边界，则跳过显示*/
-			if (X + i > Graphic_ptr->Screen_X-1) {break;}
-			if (Y / 8 + j > Graphic_ptr->Screen_Page-1) {return;}
-			
-			/*显示图像在当前页的内容*/
-			Graphic_ptr->DisplayBuf[Y / 8 + j][X + i] |= Image[j * Width + i] << (Y % 8);
-			
-			/*超出边界，则跳过显示*/
-			/*使用continue的目的是，下一页超出边界时，上一页的后续内容还需要继续显示*/
-			if (Y / 8 + j + 1 > Graphic_ptr->Screen_Page-1) {continue;}
-			
-			/*显示图像在下一页的内容*/
-			Graphic_ptr->DisplayBuf[Y / 8 + j + 1][X + i] |= Image[j * Width + i] >> (8 - Y % 8);
-		}
-	}
-}
-
 /**
   * 函    数：OLED使用printf函数打印格式化字符串
   * 参    数：X 指定格式化字符串左上角的横坐标，范围：0~Graphic_ptr->Screen_X-1
@@ -450,7 +458,7 @@ void Graphic_DrawPoint(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y)
 	if (Y > Graphic_ptr->Screen_Y-1) {return;}
 	
 	/*将显存数组指定位置的一个Bit数据置1*/
-	Graphic_ptr->DisplayBuf[Y / 8][X] |= 0x01 << (Y % 8);
+	Graphic_ptr->DisplayBuf[Y / BIT_PER_PAGE][X] |= 0x01 << (Y % BIT_PER_PAGE);
 }
 
 /**
@@ -466,7 +474,7 @@ uint8_t Graphic_GetPoint(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y)
 	if (Y > Graphic_ptr->Screen_Y-1) {return 0;}
 	
 	/*判断指定位置的数据*/
-	if (Graphic_ptr->DisplayBuf[Y / 8][X] & 0x01 << (Y % 8))
+	if (Graphic_ptr->DisplayBuf[Y / BIT_PER_PAGE][X] & 0x01 << (Y % BIT_PER_PAGE))
 	{
 		return 1;	//为1，返回1
 	}
