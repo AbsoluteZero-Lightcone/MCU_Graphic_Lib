@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    Graphic_Math.c
   * @author  Lightcone
-  * @version V1.0.1
+  * @version V1.0.2
   * @date    2024-03-21
   * @brief   图形显示 内部数学库
   ******************************************************************************
@@ -19,7 +19,7 @@
   * 参    数：Y 指数
   * 返 回 值：等于X的Y次方
   */
-uint32_t OLED_Pow(uint32_t X, uint32_t Y)
+uint32_t Graphic_Pow(uint32_t X, uint32_t Y)
 {
 	uint32_t Result = 1;	//结果默认为1
 	while (Y --)			//累乘Y次
@@ -36,7 +36,7 @@ uint32_t OLED_Pow(uint32_t X, uint32_t Y)
   * 参    数：testx testy 测试点的X和y坐标
   * 返 回 值：指定点是否在指定多边形内部，1：在内部，0：不在内部
   */
-uint8_t OLED_pnpoly(uint8_t nvert, int16_t *vertx, int16_t *verty, int16_t testx, int16_t testy)
+uint8_t Graphic_pnpoly(uint8_t nvert, int16_t *vertx, int16_t *verty, int16_t testx, int16_t testy)
 {
 	int16_t i, j, c = 0;
 	
@@ -60,7 +60,7 @@ uint8_t OLED_pnpoly(uint8_t nvert, int16_t *vertx, int16_t *verty, int16_t testx
   *           水平向右为0度，水平向左为180度或-180度，下方为正数，上方为负数，顺时针旋转
   * 返 回 值：指定点是否在指定角度内部，1：在内部，0：不在内部
   */
-uint8_t OLED_IsInAngle(int16_t X, int16_t Y, int16_t StartAngle, int16_t EndAngle)
+uint8_t Graphic_IsInAngle(int16_t X, int16_t Y, int16_t StartAngle, int16_t EndAngle)
 {
 	int16_t PointAngle;
 	PointAngle = atan2(Y, X) / 3.14 * 180;	//计算指定点的弧度，并转换为角度表示

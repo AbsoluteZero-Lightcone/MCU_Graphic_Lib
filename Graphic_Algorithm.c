@@ -2,13 +2,18 @@
   ******************************************************************************
   * @file    Graphic_Algorithm.c
   * @author  Lightcone
-  * @version V1.0.3
+  * @version V1.0.4
   * @date    2024-03-21
   * @brief   图形显示算法层
   ******************************************************************************
   */
 #include "Graphic.h"
 #include "Graphic_Math.h"
+#include "Graphic_Data.h"
+#include <string.h>
+#include <math.h>
+#include <stdio.h>
+#include <stdarg.h>
 
 /**
   * 函    数：将OLED显存数组全部清零
@@ -16,14 +21,14 @@
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_Clear(Graphic_TypeDef*Graphic_ptr)
+void Graphic_Clear(Graphic_TypeDef*Graphic_ptr)
 {
 	uint8_t i, j;
 	for (j = 0; j < 8; j ++)				//遍历8页
 	{
 		for (i = 0; i < 128; i ++)			//遍历128列
 		{
-			OLED_DisplayBuf[j][i] = 0x00;	//将显存数组数据全部清零
+			Graphic_ptr->DisplayBuf[j][i] = 0x00;	//将显存数组数据全部清零
 		}
 	}
 }
@@ -37,7 +42,7 @@ void OLED_Clear(Graphic_TypeDef*Graphic_ptr)
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_ClearArea(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height)
+void Graphic_ClearArea(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height)
 {
 	uint8_t i, j;
 	
@@ -51,7 +56,7 @@ void OLED_ClearArea(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t Wi
 	{
 		for (i = X; i < X + Width; i ++)	//遍历指定列
 		{
-			OLED_DisplayBuf[j / 8][i] &= ~(0x01 << (j % 8));	//将显存数组指定数据清零
+			Graphic_ptr->DisplayBuf[j / 8][i] &= ~(0x01 << (j % 8));	//将显存数组指定数据清零
 		}
 	}
 }
@@ -62,14 +67,14 @@ void OLED_ClearArea(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t Wi
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_Reverse(Graphic_TypeDef*Graphic_ptr)
+void Graphic_Reverse(Graphic_TypeDef*Graphic_ptr)
 {
 	uint8_t i, j;
 	for (j = 0; j < 8; j ++)				//遍历8页
 	{
 		for (i = 0; i < 128; i ++)			//遍历128列
 		{
-			OLED_DisplayBuf[j][i] ^= 0xFF;	//将显存数组数据全部取反
+			Graphic_ptr->DisplayBuf[j][i] ^= 0xFF;	//将显存数组数据全部取反
 		}
 	}
 }
@@ -83,7 +88,7 @@ void OLED_Reverse(Graphic_TypeDef*Graphic_ptr)
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_ReverseArea(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height)
+void Graphic_ReverseArea(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height)
 {
 	uint8_t i, j;
 	
@@ -97,7 +102,7 @@ void OLED_ReverseArea(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t 
 	{
 		for (i = X; i < X + Width; i ++)	//遍历指定列
 		{
-			OLED_DisplayBuf[j / 8][i] ^= 0x01 << (j % 8);	//将显存数组指定数据取反
+			Graphic_ptr->DisplayBuf[j / 8][i] ^= 0x01 << (j % 8);	//将显存数组指定数据取反
 		}
 	}
 }
@@ -108,22 +113,22 @@ void OLED_ReverseArea(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t 
   * 参    数：Y 指定字符左上角的纵坐标，范围：0~63
   * 参    数：Char 指定要显示的字符，范围：ASCII码可见字符
   * 参    数：FontSize 指定字体大小
-  *           范围：OLED_8X16		宽8像素，高16像素
-  *                 OLED_6X8		宽6像素，高8像素
+  *           范围：Graphic_8X16		宽8像素，高16像素
+  *                 Graphic_6X8		宽6像素，高8像素
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_ShowChar(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, char Char, uint8_t FontSize)
+void Graphic_ShowChar(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, char Char, uint8_t FontSize)
 {
-	if (FontSize == OLED_8X16)		//字体为宽8像素，高16像素
+	if (FontSize == Graphic_8X16)		//字体为宽8像素，高16像素
 	{
-		/*将ASCII字模库OLED_F8x16的指定数据以8*16的图像格式显示*/
-		OLED_ShowImage(X, Y, 8, 16, OLED_F8x16[Char - ' ']);
+		/*将ASCII字模库Graphic_F8x16的指定数据以8*16的图像格式显示*/
+		Graphic_ShowImage(Graphic_ptr,X, Y, 8, 16, Graphic_F8x16[Char - ' ']);
 	}
-	else if(FontSize == OLED_6X8)	//字体为宽6像素，高8像素
+	else if(FontSize == Graphic_6X8)	//字体为宽6像素，高8像素
 	{
-		/*将ASCII字模库OLED_F6x8的指定数据以6*8的图像格式显示*/
-		OLED_ShowImage(X, Y, 6, 8, OLED_F6x8[Char - ' ']);
+		/*将ASCII字模库Graphic_F6x8的指定数据以6*8的图像格式显示*/
+		Graphic_ShowImage(Graphic_ptr,X, Y, 6, 8, Graphic_F6x8[Char - ' ']);
 	}
 }
 
@@ -133,18 +138,18 @@ void OLED_ShowChar(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, char Char, 
   * 参    数：Y 指定字符串左上角的纵坐标，范围：0~63
   * 参    数：String 指定要显示的字符串，范围：ASCII码可见字符组成的字符串
   * 参    数：FontSize 指定字体大小
-  *           范围：OLED_8X16		宽8像素，高16像素
-  *                 OLED_6X8		宽6像素，高8像素
+  *           范围：Graphic_8X16		宽8像素，高16像素
+  *                 Graphic_6X8		宽6像素，高8像素
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_ShowString(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, char *String, uint8_t FontSize)
+void Graphic_ShowString(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, char *String, uint8_t FontSize)
 {
 	uint8_t i;
 	for (i = 0; String[i] != '\0'; i++)		//遍历字符串的每个字符
 	{
-		/*调用OLED_ShowChar函数，依次显示每个字符*/
-		OLED_ShowChar(X + i * FontSize, Y, String[i], FontSize);
+		/*调用Graphic_ShowChar函数，依次显示每个字符*/
+		Graphic_ShowChar(Graphic_ptr,X + i * FontSize, Y, String[i], FontSize);
 	}
 }
 
@@ -155,20 +160,20 @@ void OLED_ShowString(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, char *Str
   * 参    数：Number 指定要显示的数字，范围：0~4294967295
   * 参    数：Length 指定数字的长度，范围：0~10
   * 参    数：FontSize 指定字体大小
-  *           范围：OLED_8X16		宽8像素，高16像素
-  *                 OLED_6X8		宽6像素，高8像素
+  *           范围：Graphic_8X16		宽8像素，高16像素
+  *                 Graphic_6X8		宽6像素，高8像素
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_ShowNum(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint32_t Number, uint8_t Length, uint8_t FontSize)
+void Graphic_ShowNum(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint32_t Number, uint8_t Length, uint8_t FontSize)
 {
 	uint8_t i;
 	for (i = 0; i < Length; i++)		//遍历数字的每一位							
 	{
-		/*调用OLED_ShowChar函数，依次显示每个数字*/
-		/*Number / OLED_Pow(10, Length - i - 1) % 10 可以十进制提取数字的每一位*/
+		/*调用Graphic_ShowChar函数，依次显示每个数字*/
+		/*Number / Graphic_Pow(10, Length - i - 1) % 10 可以十进制提取数字的每一位*/
 		/*+ '0' 可将数字转换为字符格式*/
-		OLED_ShowChar(X + i * FontSize, Y, Number / OLED_Pow(10, Length - i - 1) % 10 + '0', FontSize);
+		Graphic_ShowChar(Graphic_ptr,X + i * FontSize, Y, Number / Graphic_Pow(10, Length - i - 1) % 10 + '0', FontSize);
 	}
 }
 
@@ -179,33 +184,33 @@ void OLED_ShowNum(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint32_t Num
   * 参    数：Number 指定要显示的数字，范围：-2147483648~2147483647
   * 参    数：Length 指定数字的长度，范围：0~10
   * 参    数：FontSize 指定字体大小
-  *           范围：OLED_8X16		宽8像素，高16像素
-  *                 OLED_6X8		宽6像素，高8像素
+  *           范围：Graphic_8X16		宽8像素，高16像素
+  *                 Graphic_6X8		宽6像素，高8像素
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_ShowSignedNum(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, int32_t Number, uint8_t Length, uint8_t FontSize)
+void Graphic_ShowSignedNum(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, int32_t Number, uint8_t Length, uint8_t FontSize)
 {
 	uint8_t i;
 	uint32_t Number1;
 	
 	if (Number >= 0)						//数字大于等于0
 	{
-		OLED_ShowChar(X, Y, '+', FontSize);	//显示+号
+		Graphic_ShowChar(Graphic_ptr,X, Y, '+', FontSize);	//显示+号
 		Number1 = Number;					//Number1直接等于Number
 	}
 	else									//数字小于0
 	{
-		OLED_ShowChar(X, Y, '-', FontSize);	//显示-号
+		Graphic_ShowChar(Graphic_ptr,X, Y, '-', FontSize);	//显示-号
 		Number1 = -Number;					//Number1等于Number取负
 	}
 	
 	for (i = 0; i < Length; i++)			//遍历数字的每一位								
 	{
-		/*调用OLED_ShowChar函数，依次显示每个数字*/
-		/*Number1 / OLED_Pow(10, Length - i - 1) % 10 可以十进制提取数字的每一位*/
+		/*调用Graphic_ShowChar函数，依次显示每个数字*/
+		/*Number1 / Graphic_Pow(10, Length - i - 1) % 10 可以十进制提取数字的每一位*/
 		/*+ '0' 可将数字转换为字符格式*/
-		OLED_ShowChar(X + (i + 1) * FontSize, Y, Number1 / OLED_Pow(10, Length - i - 1) % 10 + '0', FontSize);
+		Graphic_ShowChar(Graphic_ptr,X + (i + 1) * FontSize, Y, Number1 / Graphic_Pow(10, Length - i - 1) % 10 + '0', FontSize);
 	}
 }
 
@@ -216,30 +221,30 @@ void OLED_ShowSignedNum(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, int32_
   * 参    数：Number 指定要显示的数字，范围：0x00000000~0xFFFFFFFF
   * 参    数：Length 指定数字的长度，范围：0~8
   * 参    数：FontSize 指定字体大小
-  *           范围：OLED_8X16		宽8像素，高16像素
-  *                 OLED_6X8		宽6像素，高8像素
+  *           范围：Graphic_8X16		宽8像素，高16像素
+  *                 Graphic_6X8		宽6像素，高8像素
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_ShowHexNum(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint32_t Number, uint8_t Length, uint8_t FontSize)
+void Graphic_ShowHexNum(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint32_t Number, uint8_t Length, uint8_t FontSize)
 {
 	uint8_t i, SingleNumber;
 	for (i = 0; i < Length; i++)		//遍历数字的每一位
 	{
 		/*以十六进制提取数字的每一位*/
-		SingleNumber = Number / OLED_Pow(16, Length - i - 1) % 16;
+		SingleNumber = Number / Graphic_Pow(16, Length - i - 1) % 16;
 		
 		if (SingleNumber < 10)			//单个数字小于10
 		{
-			/*调用OLED_ShowChar函数，显示此数字*/
+			/*调用Graphic_ShowChar函数，显示此数字*/
 			/*+ '0' 可将数字转换为字符格式*/
-			OLED_ShowChar(X + i * FontSize, Y, SingleNumber + '0', FontSize);
+			Graphic_ShowChar(Graphic_ptr,X + i * FontSize, Y, SingleNumber + '0', FontSize);
 		}
 		else							//单个数字大于10
 		{
-			/*调用OLED_ShowChar函数，显示此数字*/
+			/*调用Graphic_ShowChar函数，显示此数字*/
 			/*+ 'A' 可将数字转换为从A开始的十六进制字符*/
-			OLED_ShowChar(X + i * FontSize, Y, SingleNumber - 10 + 'A', FontSize);
+			Graphic_ShowChar(Graphic_ptr,X + i * FontSize, Y, SingleNumber - 10 + 'A', FontSize);
 		}
 	}
 }
@@ -251,20 +256,20 @@ void OLED_ShowHexNum(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint32_t 
   * 参    数：Number 指定要显示的数字，范围：0x00000000~0xFFFFFFFF
   * 参    数：Length 指定数字的长度，范围：0~16
   * 参    数：FontSize 指定字体大小
-  *           范围：OLED_8X16		宽8像素，高16像素
-  *                 OLED_6X8		宽6像素，高8像素
+  *           范围：Graphic_8X16		宽8像素，高16像素
+  *                 Graphic_6X8		宽6像素，高8像素
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_ShowBinNum(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint32_t Number, uint8_t Length, uint8_t FontSize)
+void Graphic_ShowBinNum(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint32_t Number, uint8_t Length, uint8_t FontSize)
 {
 	uint8_t i;
 	for (i = 0; i < Length; i++)		//遍历数字的每一位	
 	{
-		/*调用OLED_ShowChar函数，依次显示每个数字*/
-		/*Number / OLED_Pow(2, Length - i - 1) % 2 可以二进制提取数字的每一位*/
+		/*调用Graphic_ShowChar函数，依次显示每个数字*/
+		/*Number / Graphic_Pow(2, Length - i - 1) % 2 可以二进制提取数字的每一位*/
 		/*+ '0' 可将数字转换为字符格式*/
-		OLED_ShowChar(X + i * FontSize, Y, Number / OLED_Pow(2, Length - i - 1) % 2 + '0', FontSize);
+		Graphic_ShowChar(Graphic_ptr,X + i * FontSize, Y, Number / Graphic_Pow(2, Length - i - 1) % 2 + '0', FontSize);
 	}
 }
 
@@ -276,40 +281,40 @@ void OLED_ShowBinNum(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint32_t 
   * 参    数：IntLength 指定数字的整数位长度，范围：0~10
   * 参    数：FraLength 指定数字的小数位长度，范围：0~9，小数进行四舍五入显示
   * 参    数：FontSize 指定字体大小
-  *           范围：OLED_8X16		宽8像素，高16像素
-  *                 OLED_6X8		宽6像素，高8像素
+  *           范围：Graphic_8X16		宽8像素，高16像素
+  *                 Graphic_6X8		宽6像素，高8像素
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_ShowFloatNum(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, double Number, uint8_t IntLength, uint8_t FraLength, uint8_t FontSize)
+void Graphic_ShowFloatNum(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, double Number, uint8_t IntLength, uint8_t FraLength, uint8_t FontSize)
 {
 	uint32_t PowNum, IntNum, FraNum;
 	
 	if (Number >= 0)						//数字大于等于0
 	{
-		OLED_ShowChar(X, Y, '+', FontSize);	//显示+号
+		Graphic_ShowChar(Graphic_ptr,X, Y, '+', FontSize);	//显示+号
 	}
 	else									//数字小于0
 	{
-		OLED_ShowChar(X, Y, '-', FontSize);	//显示-号
+		Graphic_ShowChar(Graphic_ptr,X, Y, '-', FontSize);	//显示-号
 		Number = -Number;					//Number取负
 	}
 	
 	/*提取整数部分和小数部分*/
 	IntNum = Number;						//直接赋值给整型变量，提取整数
 	Number -= IntNum;						//将Number的整数减掉，防止之后将小数乘到整数时因数过大造成错误
-	PowNum = OLED_Pow(10, FraLength);		//根据指定小数的位数，确定乘数
+	PowNum = Graphic_Pow(10, FraLength);		//根据指定小数的位数，确定乘数
 	FraNum = round(Number * PowNum);		//将小数乘到整数，同时四舍五入，避免显示误差
 	IntNum += FraNum / PowNum;				//若四舍五入造成了进位，则需要再加给整数
 	
 	/*显示整数部分*/
-	OLED_ShowNum(X + FontSize, Y, IntNum, IntLength, FontSize);
+	Graphic_ShowNum(Graphic_ptr,X + FontSize, Y, IntNum, IntLength, FontSize);
 	
 	/*显示小数点*/
-	OLED_ShowChar(X + (IntLength + 1) * FontSize, Y, '.', FontSize);
+	Graphic_ShowChar(Graphic_ptr,X + (IntLength + 1) * FontSize, Y, '.', FontSize);
 	
 	/*显示小数部分*/
-	OLED_ShowNum(X + (IntLength + 2) * FontSize, Y, FraNum, FraLength, FontSize);
+	Graphic_ShowNum(Graphic_ptr,X + (IntLength + 2) * FontSize, Y, FraNum, FraLength, FontSize);
 }
 
 /**
@@ -317,41 +322,41 @@ void OLED_ShowFloatNum(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, double 
   * 参    数：X 指定汉字串左上角的横坐标，范围：0~127
   * 参    数：Y 指定汉字串左上角的纵坐标，范围：0~63
   * 参    数：Chinese 指定要显示的汉字串，范围：必须全部为汉字或者全角字符，不要加入任何半角字符
-  *           显示的汉字需要在OLED_Data.c里的OLED_CF16x16数组定义
+  *           显示的汉字需要在Graphic_Data.c里的Graphic_CF16x16数组定义
   *           未找到指定汉字时，会显示默认图形（一个方框，内部一个问号）
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_ShowChinese(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, char *Chinese)
+void Graphic_ShowChinese(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, char *Chinese)
 {
 	uint8_t pChinese = 0;
 	uint8_t pIndex;
 	uint8_t i;
-	char SingleChinese[OLED_CHN_CHAR_WIDTH + 1] = {0};
+	char SingleChinese[Graphic_CHN_CHAR_WIDTH + 1] = {0};
 	
 	for (i = 0; Chinese[i] != '\0'; i ++)		//遍历汉字串
 	{
 		SingleChinese[pChinese] = Chinese[i];	//提取汉字串数据到单个汉字数组
 		pChinese ++;							//计次自增
 		
-		/*当提取次数到达OLED_CHN_CHAR_WIDTH时，即代表提取到了一个完整的汉字*/
-		if (pChinese >= OLED_CHN_CHAR_WIDTH)
+		/*当提取次数到达Graphic_CHN_CHAR_WIDTH时，即代表提取到了一个完整的汉字*/
+		if (pChinese >= Graphic_CHN_CHAR_WIDTH)
 		{
 			pChinese = 0;		//计次归零
 			
 			/*遍历整个汉字字模库，寻找匹配的汉字*/
 			/*如果找到最后一个汉字（定义为空字符串），则表示汉字未在字模库定义，停止寻找*/
-			for (pIndex = 0; strcmp(OLED_CF16x16[pIndex].Index, "") != 0; pIndex ++)
+			for (pIndex = 0; strcmp(Graphic_CF16x16[pIndex].Index, "") != 0; pIndex ++)
 			{
 				/*找到匹配的汉字*/
-				if (strcmp(OLED_CF16x16[pIndex].Index, SingleChinese) == 0)
+				if (strcmp(Graphic_CF16x16[pIndex].Index, SingleChinese) == 0)
 				{
 					break;		//跳出循环，此时pIndex的值为指定汉字的索引
 				}
 			}
 			
-			/*将汉字字模库OLED_CF16x16的指定数据以16*16的图像格式显示*/
-			OLED_ShowImage(X + ((i + 1) / OLED_CHN_CHAR_WIDTH - 1) * 16, Y, 16, 16, OLED_CF16x16[pIndex].Data);
+			/*将汉字字模库Graphic_CF16x16的指定数据以16*16的图像格式显示*/
+			Graphic_ShowImage(Graphic_ptr,X + ((i + 1) / Graphic_CHN_CHAR_WIDTH - 1) * 16, Y, 16, 16, Graphic_CF16x16[pIndex].Data);
 		}
 	}
 }
@@ -366,7 +371,7 @@ void OLED_ShowChinese(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, char *Ch
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_ShowImage(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height, const uint8_t *Image)
+void Graphic_ShowImage(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height, const uint8_t *Image)
 {
 	uint8_t i, j;
 	
@@ -375,7 +380,7 @@ void OLED_ShowImage(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t Wi
 	if (Y > 63) {return;}
 	
 	/*将图像所在区域清空*/
-	OLED_ClearArea(X, Y, Width, Height);
+	Graphic_ClearArea(Graphic_ptr,X, Y, Width, Height);
 	
 	/*遍历指定图像涉及的相关页*/
 	/*(Height - 1) / 8 + 1的目的是Height / 8并向上取整*/
@@ -389,14 +394,14 @@ void OLED_ShowImage(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t Wi
 			if (Y / 8 + j > 7) {return;}
 			
 			/*显示图像在当前页的内容*/
-			OLED_DisplayBuf[Y / 8 + j][X + i] |= Image[j * Width + i] << (Y % 8);
+			Graphic_ptr->DisplayBuf[Y / 8 + j][X + i] |= Image[j * Width + i] << (Y % 8);
 			
 			/*超出边界，则跳过显示*/
 			/*使用continue的目的是，下一页超出边界时，上一页的后续内容还需要继续显示*/
 			if (Y / 8 + j + 1 > 7) {continue;}
 			
 			/*显示图像在下一页的内容*/
-			OLED_DisplayBuf[Y / 8 + j + 1][X + i] |= Image[j * Width + i] >> (8 - Y % 8);
+			Graphic_ptr->DisplayBuf[Y / 8 + j + 1][X + i] |= Image[j * Width + i] >> (8 - Y % 8);
 		}
 	}
 }
@@ -406,21 +411,21 @@ void OLED_ShowImage(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t Wi
   * 参    数：X 指定格式化字符串左上角的横坐标，范围：0~127
   * 参    数：Y 指定格式化字符串左上角的纵坐标，范围：0~63
   * 参    数：FontSize 指定字体大小
-  *           范围：OLED_8X16		宽8像素，高16像素
-  *                 OLED_6X8		宽6像素，高8像素
+  *           范围：Graphic_8X16		宽8像素，高16像素
+  *                 Graphic_6X8		宽6像素，高8像素
   * 参    数：format 指定要显示的格式化字符串，范围：ASCII码可见字符组成的字符串
   * 参    数：... 格式化字符串参数列表
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_Printf(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t FontSize, char *format, ...)
+void Graphic_Printf(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t FontSize, char *format, ...)
 {
 	char String[30];						//定义字符数组
 	va_list arg;							//定义可变参数列表数据类型的变量arg
 	va_start(arg, format);					//从format开始，接收参数列表到arg变量
 	vsprintf(String, format, arg);			//使用vsprintf打印格式化字符串和参数列表到字符数组中
 	va_end(arg);							//结束变量arg
-	OLED_ShowString(X, Y, String, FontSize);//OLED显示字符数组（字符串）
+	Graphic_ShowString(Graphic_ptr,X, Y, String, FontSize);//OLED显示字符数组（字符串）
 }
 
 /**
@@ -430,14 +435,14 @@ void OLED_Printf(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t FontS
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_DrawPoint(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y)
+void Graphic_DrawPoint(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y)
 {
 	/*参数检查，保证指定位置不会超出屏幕范围*/
 	if (X > 127) {return;}
 	if (Y > 63) {return;}
 	
 	/*将显存数组指定位置的一个Bit数据置1*/
-	OLED_DisplayBuf[Y / 8][X] |= 0x01 << (Y % 8);
+	Graphic_ptr->DisplayBuf[Y / 8][X] |= 0x01 << (Y % 8);
 }
 
 /**
@@ -446,14 +451,14 @@ void OLED_DrawPoint(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y)
   * 参    数：Y 指定点的纵坐标，范围：0~63
   * 返 回 值：指定位置点是否处于点亮状态，1：点亮，0：熄灭
   */
-uint8_t OLED_GetPoint(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y)
+uint8_t Graphic_GetPoint(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y)
 {
 	/*参数检查，保证指定位置不会超出屏幕范围*/
 	if (X > 127) {return 0;}
 	if (Y > 63) {return 0;}
 	
 	/*判断指定位置的数据*/
-	if (OLED_DisplayBuf[Y / 8][X] & 0x01 << (Y % 8))
+	if (Graphic_ptr->DisplayBuf[Y / 8][X] & 0x01 << (Y % 8))
 	{
 		return 1;	//为1，返回1
 	}
@@ -470,7 +475,7 @@ uint8_t OLED_GetPoint(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y)
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_DrawLine(Graphic_TypeDef*Graphic_ptr,uint8_t X0, uint8_t Y0, uint8_t X1, uint8_t Y1)
+void Graphic_DrawLine(Graphic_TypeDef*Graphic_ptr,uint8_t X0, uint8_t Y0, uint8_t X1, uint8_t Y1)
 {
 	int16_t x, y, dx, dy, d, incrE, incrNE, temp;
 	int16_t x0 = X0, y0 = Y0, x1 = X1, y1 = Y1;
@@ -484,7 +489,7 @@ void OLED_DrawLine(Graphic_TypeDef*Graphic_ptr,uint8_t X0, uint8_t Y0, uint8_t X
 		/*遍历X坐标*/
 		for (x = x0; x <= x1; x ++)
 		{
-			OLED_DrawPoint(x, y0);	//依次画点
+			Graphic_DrawPoint(Graphic_ptr,x, y0);	//依次画点
 		}
 	}
 	else if (x0 == x1)	//竖线单独处理
@@ -495,7 +500,7 @@ void OLED_DrawLine(Graphic_TypeDef*Graphic_ptr,uint8_t X0, uint8_t Y0, uint8_t X
 		/*遍历Y坐标*/
 		for (y = y0; y <= y1; y ++)
 		{
-			OLED_DrawPoint(x0, y);	//依次画点
+			Graphic_DrawPoint(Graphic_ptr,x0, y);	//依次画点
 		}
 	}
 	else				//斜线
@@ -545,10 +550,10 @@ void OLED_DrawLine(Graphic_TypeDef*Graphic_ptr,uint8_t X0, uint8_t Y0, uint8_t X
 		y = y0;
 		
 		/*画起始点，同时判断标志位，将坐标换回来*/
-		if (yflag && xyflag){OLED_DrawPoint(y, -x);}
-		else if (yflag)		{OLED_DrawPoint(x, -y);}
-		else if (xyflag)	{OLED_DrawPoint(y, x);}
-		else				{OLED_DrawPoint(x, y);}
+		if (yflag && xyflag){Graphic_DrawPoint(Graphic_ptr,y, -x);}
+		else if (yflag)		{Graphic_DrawPoint(Graphic_ptr,x, -y);}
+		else if (xyflag)	{Graphic_DrawPoint(Graphic_ptr,y, x);}
+		else				{Graphic_DrawPoint(Graphic_ptr,x, y);}
 		
 		while (x < x1)		//遍历X轴的每个点
 		{
@@ -564,10 +569,10 @@ void OLED_DrawLine(Graphic_TypeDef*Graphic_ptr,uint8_t X0, uint8_t Y0, uint8_t X
 			}
 			
 			/*画每一个点，同时判断标志位，将坐标换回来*/
-			if (yflag && xyflag){OLED_DrawPoint(y, -x);}
-			else if (yflag)		{OLED_DrawPoint(x, -y);}
-			else if (xyflag)	{OLED_DrawPoint(y, x);}
-			else				{OLED_DrawPoint(x, y);}
+			if (yflag && xyflag){Graphic_DrawPoint(Graphic_ptr,y, -x);}
+			else if (yflag)		{Graphic_DrawPoint(Graphic_ptr,x, -y);}
+			else if (xyflag)	{Graphic_DrawPoint(Graphic_ptr,y, x);}
+			else				{Graphic_DrawPoint(Graphic_ptr,x, y);}
 		}	
 	}
 }
@@ -579,12 +584,12 @@ void OLED_DrawLine(Graphic_TypeDef*Graphic_ptr,uint8_t X0, uint8_t Y0, uint8_t X
   * 参    数：Width 指定矩形的宽度，范围：0~128
   * 参    数：Height 指定矩形的高度，范围：0~64
   * 参    数：IsFilled 指定矩形是否填充
-  *           范围：OLED_UNFILLED		不填充
-  *                 OLED_FILLED			填充
+  *           范围：Graphic_UNFILLED		不填充
+  *                 Graphic_FILLED			填充
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_DrawRectangle(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height, uint8_t IsFilled)
+void Graphic_DrawRectangle(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height, uint8_t IsFilled)
 {
 	uint8_t i, j;
 	if (!IsFilled)		//指定矩形不填充
@@ -592,14 +597,14 @@ void OLED_DrawRectangle(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_
 		/*遍历上下X坐标，画矩形上下两条线*/
 		for (i = X; i < X + Width; i ++)
 		{
-			OLED_DrawPoint(i, Y);
-			OLED_DrawPoint(i, Y + Height - 1);
+			Graphic_DrawPoint(Graphic_ptr,i, Y);
+			Graphic_DrawPoint(Graphic_ptr,i, Y + Height - 1);
 		}
 		/*遍历左右Y坐标，画矩形左右两条线*/
 		for (i = Y; i < Y + Height; i ++)
 		{
-			OLED_DrawPoint(X, i);
-			OLED_DrawPoint(X + Width - 1, i);
+			Graphic_DrawPoint(Graphic_ptr,X, i);
+			Graphic_DrawPoint(Graphic_ptr,X + Width - 1, i);
 		}
 	}
 	else				//指定矩形填充
@@ -611,7 +616,7 @@ void OLED_DrawRectangle(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_
 			for (j = Y; j < Y + Height; j ++)
 			{
 				/*在指定区域画点，填充满矩形*/
-				OLED_DrawPoint(i, j);
+				Graphic_DrawPoint(Graphic_ptr,i, j);
 			}
 		}
 	}
@@ -626,12 +631,12 @@ void OLED_DrawRectangle(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_
   * 参    数：X2 指定第三个端点的横坐标，范围：0~127
   * 参    数：Y2 指定第三个端点的纵坐标，范围：0~63
   * 参    数：IsFilled 指定三角形是否填充
-  *           范围：OLED_UNFILLED		不填充
-  *                 OLED_FILLED			填充
+  *           范围：Graphic_UNFILLED		不填充
+  *                 Graphic_FILLED			填充
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_DrawTriangle(Graphic_TypeDef*Graphic_ptr,uint8_t X0, uint8_t Y0, uint8_t X1, uint8_t Y1, uint8_t X2, uint8_t Y2, uint8_t IsFilled)
+void Graphic_DrawTriangle(Graphic_TypeDef*Graphic_ptr,uint8_t X0, uint8_t Y0, uint8_t X1, uint8_t Y1, uint8_t X2, uint8_t Y2, uint8_t IsFilled)
 {
 	uint8_t minx = X0, miny = Y0, maxx = X0, maxy = Y0;
 	uint8_t i, j;
@@ -641,9 +646,9 @@ void OLED_DrawTriangle(Graphic_TypeDef*Graphic_ptr,uint8_t X0, uint8_t Y0, uint8
 	if (!IsFilled)			//指定三角形不填充
 	{
 		/*调用画线函数，将三个点用直线连接*/
-		OLED_DrawLine(X0, Y0, X1, Y1);
-		OLED_DrawLine(X0, Y0, X2, Y2);
-		OLED_DrawLine(X1, Y1, X2, Y2);
+		Graphic_DrawLine(Graphic_ptr,X0, Y0, X1, Y1);
+		Graphic_DrawLine(Graphic_ptr,X0, Y0, X2, Y2);
+		Graphic_DrawLine(Graphic_ptr,X1, Y1, X2, Y2);
 	}
 	else					//指定三角形填充
 	{
@@ -667,9 +672,9 @@ void OLED_DrawTriangle(Graphic_TypeDef*Graphic_ptr,uint8_t X0, uint8_t Y0, uint8
 			/*遍历Y坐标*/	
 			for (j = miny; j <= maxy; j ++)
 			{
-				/*调用OLED_pnpoly，判断指定点是否在指定三角形之中*/
+				/*调用Graphic_pnpoly，判断指定点是否在指定三角形之中*/
 				/*如果在，则画点，如果不在，则不做处理*/
-				if (OLED_pnpoly(3, vx, vy, i, j)) {OLED_DrawPoint(i, j);}
+				if (Graphic_pnpoly(3, vx, vy, i, j)) {Graphic_DrawPoint(Graphic_ptr,i, j);}
 			}
 		}
 	}
@@ -681,12 +686,12 @@ void OLED_DrawTriangle(Graphic_TypeDef*Graphic_ptr,uint8_t X0, uint8_t Y0, uint8
   * 参    数：Y 指定圆的圆心纵坐标，范围：0~63
   * 参    数：Radius 指定圆的半径，范围：0~255
   * 参    数：IsFilled 指定圆是否填充
-  *           范围：OLED_UNFILLED		不填充
-  *                 OLED_FILLED			填充
+  *           范围：Graphic_UNFILLED		不填充
+  *                 Graphic_FILLED			填充
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_DrawCircle(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t Radius, uint8_t IsFilled)
+void Graphic_DrawCircle(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t Radius, uint8_t IsFilled)
 {
 	int16_t x, y, d, j;
 	
@@ -699,10 +704,10 @@ void OLED_DrawCircle(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t R
 	y = Radius;
 	
 	/*画每个八分之一圆弧的起始点*/
-	OLED_DrawPoint(X + x, Y + y);
-	OLED_DrawPoint(X - x, Y - y);
-	OLED_DrawPoint(X + y, Y + x);
-	OLED_DrawPoint(X - y, Y - x);
+	Graphic_DrawPoint(Graphic_ptr,X + x, Y + y);
+	Graphic_DrawPoint(Graphic_ptr,X - x, Y - y);
+	Graphic_DrawPoint(Graphic_ptr,X + y, Y + x);
+	Graphic_DrawPoint(Graphic_ptr,X - y, Y - x);
 	
 	if (IsFilled)		//指定圆填充
 	{
@@ -710,7 +715,7 @@ void OLED_DrawCircle(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t R
 		for (j = -y; j < y; j ++)
 		{
 			/*在指定区域画点，填充部分圆*/
-			OLED_DrawPoint(X, Y + j);
+			Graphic_DrawPoint(Graphic_ptr,X, Y + j);
 		}
 	}
 	
@@ -728,14 +733,14 @@ void OLED_DrawCircle(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t R
 		}
 		
 		/*画每个八分之一圆弧的点*/
-		OLED_DrawPoint(X + x, Y + y);
-		OLED_DrawPoint(X + y, Y + x);
-		OLED_DrawPoint(X - x, Y - y);
-		OLED_DrawPoint(X - y, Y - x);
-		OLED_DrawPoint(X + x, Y - y);
-		OLED_DrawPoint(X + y, Y - x);
-		OLED_DrawPoint(X - x, Y + y);
-		OLED_DrawPoint(X - y, Y + x);
+		Graphic_DrawPoint(Graphic_ptr,X + x, Y + y);
+		Graphic_DrawPoint(Graphic_ptr,X + y, Y + x);
+		Graphic_DrawPoint(Graphic_ptr,X - x, Y - y);
+		Graphic_DrawPoint(Graphic_ptr,X - y, Y - x);
+		Graphic_DrawPoint(Graphic_ptr,X + x, Y - y);
+		Graphic_DrawPoint(Graphic_ptr,X + y, Y - x);
+		Graphic_DrawPoint(Graphic_ptr,X - x, Y + y);
+		Graphic_DrawPoint(Graphic_ptr,X - y, Y + x);
 		
 		if (IsFilled)	//指定圆填充
 		{
@@ -743,16 +748,16 @@ void OLED_DrawCircle(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t R
 			for (j = -y; j < y; j ++)
 			{
 				/*在指定区域画点，填充部分圆*/
-				OLED_DrawPoint(X + x, Y + j);
-				OLED_DrawPoint(X - x, Y + j);
+				Graphic_DrawPoint(Graphic_ptr,X + x, Y + j);
+				Graphic_DrawPoint(Graphic_ptr,X - x, Y + j);
 			}
 			
 			/*遍历两侧部分*/
 			for (j = -x; j < x; j ++)
 			{
 				/*在指定区域画点，填充部分圆*/
-				OLED_DrawPoint(X - y, Y + j);
-				OLED_DrawPoint(X + y, Y + j);
+				Graphic_DrawPoint(Graphic_ptr,X - y, Y + j);
+				Graphic_DrawPoint(Graphic_ptr,X + y, Y + j);
 			}
 		}
 	}
@@ -765,12 +770,12 @@ void OLED_DrawCircle(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t R
   * 参    数：A 指定椭圆的横向半轴长度，范围：0~255
   * 参    数：B 指定椭圆的纵向半轴长度，范围：0~255
   * 参    数：IsFilled 指定椭圆是否填充
-  *           范围：OLED_UNFILLED		不填充
-  *                 OLED_FILLED			填充
+  *           范围：Graphic_UNFILLED		不填充
+  *                 Graphic_FILLED			填充
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_DrawEllipse(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t A, uint8_t B, uint8_t IsFilled)
+void Graphic_DrawEllipse(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t A, uint8_t B, uint8_t IsFilled)
 {
 	int16_t x, y, j;
 	int16_t a = A, b = B;
@@ -789,16 +794,16 @@ void OLED_DrawEllipse(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t 
 		for (j = -y; j < y; j ++)
 		{
 			/*在指定区域画点，填充部分椭圆*/
-			OLED_DrawPoint(X, Y + j);
-			OLED_DrawPoint(X, Y + j);
+			Graphic_DrawPoint(Graphic_ptr,X, Y + j);
+			Graphic_DrawPoint(Graphic_ptr,X, Y + j);
 		}
 	}
 	
 	/*画椭圆弧的起始点*/
-	OLED_DrawPoint(X + x, Y + y);
-	OLED_DrawPoint(X - x, Y - y);
-	OLED_DrawPoint(X - x, Y + y);
-	OLED_DrawPoint(X + x, Y - y);
+	Graphic_DrawPoint(Graphic_ptr,X + x, Y + y);
+	Graphic_DrawPoint(Graphic_ptr,X - x, Y - y);
+	Graphic_DrawPoint(Graphic_ptr,X - x, Y + y);
+	Graphic_DrawPoint(Graphic_ptr,X + x, Y - y);
 	
 	/*画椭圆中间部分*/
 	while (b * b * (x + 1) < a * a * (y - 0.5))
@@ -820,16 +825,16 @@ void OLED_DrawEllipse(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t 
 			for (j = -y; j < y; j ++)
 			{
 				/*在指定区域画点，填充部分椭圆*/
-				OLED_DrawPoint(X + x, Y + j);
-				OLED_DrawPoint(X - x, Y + j);
+				Graphic_DrawPoint(Graphic_ptr,X + x, Y + j);
+				Graphic_DrawPoint(Graphic_ptr,X - x, Y + j);
 			}
 		}
 		
 		/*画椭圆中间部分圆弧*/
-		OLED_DrawPoint(X + x, Y + y);
-		OLED_DrawPoint(X - x, Y - y);
-		OLED_DrawPoint(X - x, Y + y);
-		OLED_DrawPoint(X + x, Y - y);
+		Graphic_DrawPoint(Graphic_ptr,X + x, Y + y);
+		Graphic_DrawPoint(Graphic_ptr,X - x, Y - y);
+		Graphic_DrawPoint(Graphic_ptr,X - x, Y + y);
+		Graphic_DrawPoint(Graphic_ptr,X + x, Y - y);
 	}
 	
 	/*画椭圆两侧部分*/
@@ -855,16 +860,16 @@ void OLED_DrawEllipse(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t 
 			for (j = -y; j < y; j ++)
 			{
 				/*在指定区域画点，填充部分椭圆*/
-				OLED_DrawPoint(X + x, Y + j);
-				OLED_DrawPoint(X - x, Y + j);
+				Graphic_DrawPoint(Graphic_ptr,X + x, Y + j);
+				Graphic_DrawPoint(Graphic_ptr,X - x, Y + j);
 			}
 		}
 		
 		/*画椭圆两侧部分圆弧*/
-		OLED_DrawPoint(X + x, Y + y);
-		OLED_DrawPoint(X - x, Y - y);
-		OLED_DrawPoint(X - x, Y + y);
-		OLED_DrawPoint(X + x, Y - y);
+		Graphic_DrawPoint(Graphic_ptr,X + x, Y + y);
+		Graphic_DrawPoint(Graphic_ptr,X - x, Y - y);
+		Graphic_DrawPoint(Graphic_ptr,X - x, Y + y);
+		Graphic_DrawPoint(Graphic_ptr,X + x, Y - y);
 	}
 }
 
@@ -878,12 +883,12 @@ void OLED_DrawEllipse(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t 
   * 参    数：EndAngle 指定圆弧的终止角度，范围：-180~180
   *           水平向右为0度，水平向左为180度或-180度，下方为正数，上方为负数，顺时针旋转
   * 参    数：IsFilled 指定圆弧是否填充，填充后为扇形
-  *           范围：OLED_UNFILLED		不填充
-  *                 OLED_FILLED			填充
+  *           范围：Graphic_UNFILLED		不填充
+  *                 Graphic_FILLED			填充
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
-void OLED_DrawArc(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t Radius, int16_t StartAngle, int16_t EndAngle, uint8_t IsFilled)
+void Graphic_DrawArc(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t Radius, int16_t StartAngle, int16_t EndAngle, uint8_t IsFilled)
 {
 	int16_t x, y, d, j;
 	
@@ -894,10 +899,10 @@ void OLED_DrawArc(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t Radi
 	y = Radius;
 	
 	/*在画圆的每个点时，判断指定点是否在指定角度内，在，则画点，不在，则不做处理*/
-	if (OLED_IsInAngle(x, y, StartAngle, EndAngle))	{OLED_DrawPoint(X + x, Y + y);}
-	if (OLED_IsInAngle(-x, -y, StartAngle, EndAngle)) {OLED_DrawPoint(X - x, Y - y);}
-	if (OLED_IsInAngle(y, x, StartAngle, EndAngle)) {OLED_DrawPoint(X + y, Y + x);}
-	if (OLED_IsInAngle(-y, -x, StartAngle, EndAngle)) {OLED_DrawPoint(X - y, Y - x);}
+	if (Graphic_IsInAngle(x, y, StartAngle, EndAngle))	{Graphic_DrawPoint(Graphic_ptr,X + x, Y + y);}
+	if (Graphic_IsInAngle(-x, -y, StartAngle, EndAngle)) {Graphic_DrawPoint(Graphic_ptr,X - x, Y - y);}
+	if (Graphic_IsInAngle(y, x, StartAngle, EndAngle)) {Graphic_DrawPoint(Graphic_ptr,X + y, Y + x);}
+	if (Graphic_IsInAngle(-y, -x, StartAngle, EndAngle)) {Graphic_DrawPoint(Graphic_ptr,X - y, Y - x);}
 	
 	if (IsFilled)	//指定圆弧填充
 	{
@@ -905,7 +910,7 @@ void OLED_DrawArc(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t Radi
 		for (j = -y; j < y; j ++)
 		{
 			/*在填充圆的每个点时，判断指定点是否在指定角度内，在，则画点，不在，则不做处理*/
-			if (OLED_IsInAngle(0, j, StartAngle, EndAngle)) {OLED_DrawPoint(X, Y + j);}
+			if (Graphic_IsInAngle(0, j, StartAngle, EndAngle)) {Graphic_DrawPoint(Graphic_ptr,X, Y + j);}
 		}
 	}
 	
@@ -923,14 +928,14 @@ void OLED_DrawArc(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t Radi
 		}
 		
 		/*在画圆的每个点时，判断指定点是否在指定角度内，在，则画点，不在，则不做处理*/
-		if (OLED_IsInAngle(x, y, StartAngle, EndAngle)) {OLED_DrawPoint(X + x, Y + y);}
-		if (OLED_IsInAngle(y, x, StartAngle, EndAngle)) {OLED_DrawPoint(X + y, Y + x);}
-		if (OLED_IsInAngle(-x, -y, StartAngle, EndAngle)) {OLED_DrawPoint(X - x, Y - y);}
-		if (OLED_IsInAngle(-y, -x, StartAngle, EndAngle)) {OLED_DrawPoint(X - y, Y - x);}
-		if (OLED_IsInAngle(x, -y, StartAngle, EndAngle)) {OLED_DrawPoint(X + x, Y - y);}
-		if (OLED_IsInAngle(y, -x, StartAngle, EndAngle)) {OLED_DrawPoint(X + y, Y - x);}
-		if (OLED_IsInAngle(-x, y, StartAngle, EndAngle)) {OLED_DrawPoint(X - x, Y + y);}
-		if (OLED_IsInAngle(-y, x, StartAngle, EndAngle)) {OLED_DrawPoint(X - y, Y + x);}
+		if (Graphic_IsInAngle(x, y, StartAngle, EndAngle)) {Graphic_DrawPoint(Graphic_ptr,X + x, Y + y);}
+		if (Graphic_IsInAngle(y, x, StartAngle, EndAngle)) {Graphic_DrawPoint(Graphic_ptr,X + y, Y + x);}
+		if (Graphic_IsInAngle(-x, -y, StartAngle, EndAngle)) {Graphic_DrawPoint(Graphic_ptr,X - x, Y - y);}
+		if (Graphic_IsInAngle(-y, -x, StartAngle, EndAngle)) {Graphic_DrawPoint(Graphic_ptr,X - y, Y - x);}
+		if (Graphic_IsInAngle(x, -y, StartAngle, EndAngle)) {Graphic_DrawPoint(Graphic_ptr,X + x, Y - y);}
+		if (Graphic_IsInAngle(y, -x, StartAngle, EndAngle)) {Graphic_DrawPoint(Graphic_ptr,X + y, Y - x);}
+		if (Graphic_IsInAngle(-x, y, StartAngle, EndAngle)) {Graphic_DrawPoint(Graphic_ptr,X - x, Y + y);}
+		if (Graphic_IsInAngle(-y, x, StartAngle, EndAngle)) {Graphic_DrawPoint(Graphic_ptr,X - y, Y + x);}
 		
 		if (IsFilled)	//指定圆弧填充
 		{
@@ -938,16 +943,16 @@ void OLED_DrawArc(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t Radi
 			for (j = -y; j < y; j ++)
 			{
 				/*在填充圆的每个点时，判断指定点是否在指定角度内，在，则画点，不在，则不做处理*/
-				if (OLED_IsInAngle(x, j, StartAngle, EndAngle)) {OLED_DrawPoint(X + x, Y + j);}
-				if (OLED_IsInAngle(-x, j, StartAngle, EndAngle)) {OLED_DrawPoint(X - x, Y + j);}
+				if (Graphic_IsInAngle(x, j, StartAngle, EndAngle)) {Graphic_DrawPoint(Graphic_ptr,X + x, Y + j);}
+				if (Graphic_IsInAngle(-x, j, StartAngle, EndAngle)) {Graphic_DrawPoint(Graphic_ptr,X - x, Y + j);}
 			}
 			
 			/*遍历两侧部分*/
 			for (j = -x; j < x; j ++)
 			{
 				/*在填充圆的每个点时，判断指定点是否在指定角度内，在，则画点，不在，则不做处理*/
-				if (OLED_IsInAngle(-y, j, StartAngle, EndAngle)) {OLED_DrawPoint(X - y, Y + j);}
-				if (OLED_IsInAngle(y, j, StartAngle, EndAngle)) {OLED_DrawPoint(X + y, Y + j);}
+				if (Graphic_IsInAngle(-y, j, StartAngle, EndAngle)) {Graphic_DrawPoint(Graphic_ptr,X - y, Y + j);}
+				if (Graphic_IsInAngle(y, j, StartAngle, EndAngle)) {Graphic_DrawPoint(Graphic_ptr,X + y, Y + j);}
 			}
 		}
 	}

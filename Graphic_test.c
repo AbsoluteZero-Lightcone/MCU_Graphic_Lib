@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    Graphic_test.c
   * @author  Lightcone
-  * @version V1.0.1
+  * @version V1.0.2
   * @date    2024-03-21
   * @brief   图形显示库测试环境
   ******************************************************************************
@@ -117,7 +117,7 @@ void Enum_OLED3_UpdateArea_Callback(uint8_t X, uint8_t Y, uint8_t Width, uint8_t
 void Enum_OLED4_UpdateArea_Callback(uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height){OLED_UpdateArea_RAW(&Screen[Enum_OLED4],X,Y,Width,Height);}
 void Enum_OLED5_UpdateArea_Callback(uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height){OLED_UpdateArea_RAW(&Screen[Enum_OLED5],X,Y,Width,Height);}
 // 硬件抽象层和显示应用层分离，能够同时驱动不同种芯片的屏幕
-Graphic_InitTypeDef Display[Enum_OLED_MAX] = {
+Graphic_TypeDef Display[Enum_OLED_MAX] = {
 	[Enum_OLED1] = {
 		.Screen_SetCursor_Callback = Enum_OLED1_SetCursor_Callback,
 		.Screen_Update_Callback = Enum_OLED1_Update_Callback,
