@@ -1,13 +1,12 @@
 /**
   ******************************************************************************
-  * @file    Graphic_Cache.c
+  * @file    Graphic_SharingBuffer.h
   * @author  Lightcone
   * @version V1.0.0
-  * @date    2024-03-21
-  * @brief   显示缓冲区存储管理接口
+  * @date    2024-03-22
+  * @brief   共享显示缓冲区
   ******************************************************************************
   */
 #include "Graphic.h"
-
 
 /******************* Absolute Zero Studio - Lightcone **********END OF FILE****/

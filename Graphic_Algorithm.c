@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    Graphic_Algorithm.c
   * @author  Lightcone
-  * @version V1.1.0
-  * @date    2024-03-21
+  * @version V1.1.1
+  * @date    2024-03-22
   * @brief   图形显示算法层
   ******************************************************************************
   */
@@ -21,7 +21,6 @@
 //Graphic_ptr->Screen_X   Graphic_ptr->Screen_X
 //Graphic_ptr->Screen_X-1   Graphic_ptr->Screen_X-1
 
-#define BIT_PER_PAGE 8
 
 // Basic Graphic Display
 

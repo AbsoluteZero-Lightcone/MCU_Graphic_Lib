@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    Graphic.h
   * @author  Lightcone
-  * @version V1.0.5
-  * @date    2024-03-21
+  * @version V1.0.6
+  * @date    2024-03-22
   * @brief   图形显示库
   ******************************************************************************
   */
@@ -23,6 +23,9 @@
 /*IsFilled参数数值*/
 #define Graphic_UNFILLED			0
 #define Graphic_FILLED				1
+
+
+#define BIT_PER_PAGE 8
 
 /*********************参数宏定义*/
 typedef struct{
