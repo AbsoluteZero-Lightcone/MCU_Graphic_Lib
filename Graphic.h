@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    Graphic.h
   * @author  Lightcone
-  * @version V1.0.4
+  * @version V1.0.5
   * @date    2024-03-21
   * @brief   图形显示库
   ******************************************************************************
@@ -32,6 +32,7 @@ typedef struct{
 	uint8_t **DisplayBuf;
 	uint8_t Screen_X;
 	uint8_t Screen_Y;
+	uint8_t Screen_Page;
 }Graphic_TypeDef;
 #define SetCursor(a,b) Graphic_ptr->Screen_SetCursor_Callback(a,b)
 #define Update()       Graphic_ptr->Screen_Update_Callback(Graphic_ptr->Display_Buffer);

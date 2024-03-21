@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    Graphic_test.c
   * @author  Lightcone
-  * @version V1.0.2
+  * @version V1.0.3
   * @date    2024-03-21
   * @brief   图形显示库测试环境
   ******************************************************************************
@@ -125,6 +125,7 @@ Graphic_TypeDef Display[Enum_OLED_MAX] = {
 		.DisplayBuf = (uint8_t **)Screen[Enum_OLED1].DisplayBuf,
 		.Screen_X = 128,
 		.Screen_Y = 64,
+		.Screen_Page = 8,
 	},
 	[Enum_OLED2] = {
 		.Screen_SetCursor_Callback = Enum_OLED2_SetCursor_Callback,
@@ -133,6 +134,7 @@ Graphic_TypeDef Display[Enum_OLED_MAX] = {
 		.DisplayBuf = (uint8_t **)Screen[Enum_OLED2].DisplayBuf,
 		.Screen_X = 128,
 		.Screen_Y = 64,
+		.Screen_Page = 8,
 	},
 	[Enum_OLED3] = {
 		.Screen_SetCursor_Callback = Enum_OLED3_SetCursor_Callback,
@@ -141,6 +143,7 @@ Graphic_TypeDef Display[Enum_OLED_MAX] = {
 		.DisplayBuf = (uint8_t **)Screen[Enum_OLED3].DisplayBuf,
 		.Screen_X = 128,
 		.Screen_Y = 64,
+		.Screen_Page = 8,
 	},
 	[Enum_OLED4] = {
 		.Screen_SetCursor_Callback = Enum_OLED4_SetCursor_Callback,
@@ -149,6 +152,7 @@ Graphic_TypeDef Display[Enum_OLED_MAX] = {
 		.DisplayBuf = (uint8_t **)Screen[Enum_OLED4].DisplayBuf,
 		.Screen_X = 128,
 		.Screen_Y = 64,
+		.Screen_Page = 8,
 	},
 	[Enum_OLED5] = {
 		.Screen_SetCursor_Callback = Enum_OLED5_SetCursor_Callback,
@@ -157,6 +161,7 @@ Graphic_TypeDef Display[Enum_OLED_MAX] = {
 		.DisplayBuf = (uint8_t **)Screen[Enum_OLED5].DisplayBuf,
 		.Screen_X = 128,
 		.Screen_Y = 64,
+		.Screen_Page = 8,
 	},
 };
 

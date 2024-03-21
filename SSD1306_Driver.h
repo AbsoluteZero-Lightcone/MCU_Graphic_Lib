@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    SSD1306_Driver.h
   * @author  Lightcone & 江协科技
-  * @version V2.0.3
+  * @version V2.0.4
   * @date    2024-03-21
   * @brief   OLED SSD1306硬件驱动层 
   ******************************************************************************
@@ -10,6 +10,8 @@
 #ifndef __SSD1306_DRIVER_H
 #define __SSD1306_DRIVER_H
 #include "STM32Device.h"
+#define SSD1306_PAGE 8
+#define SSD1306_COL 128
 
 typedef struct{
 	GPIO_TypeDef* D0_GPIO;	uint16_t D0_Pin;
@@ -17,7 +19,7 @@ typedef struct{
 	GPIO_TypeDef* RES_GPIO;	uint16_t RES_Pin;
 	GPIO_TypeDef* DC_GPIO;	uint16_t DC_Pin;
 	GPIO_TypeDef* CS_GPIO;	uint16_t CS_Pin;
-	uint8_t DisplayBuf[128][8];
+	uint8_t DisplayBuf[SSD1306_PAGE][SSD1306_COL];
 	void (*CS_Handler)(void);
 } SSD1306;
 

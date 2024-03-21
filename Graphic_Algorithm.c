@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    Graphic_Algorithm.c
   * @author  Lightcone
-  * @version V1.0.4
+  * @version V1.0.5
   * @date    2024-03-21
   * @brief   图形显示算法层
   ******************************************************************************
@@ -14,6 +14,14 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdarg.h>
+//Graphic_ptr->Screen_Y ->  Graphic_ptr->Screen_Y
+//Graphic_ptr->Screen_Y-1 ->  Graphic_ptr->Screen_Y-1
+//8 ->  Graphic_ptr->Screen_Page
+//Graphic_ptr->Screen_Page-1 ->  Graphic_ptr->Screen_Page-1
+//Graphic_ptr->Screen_X   Graphic_ptr->Screen_X
+//Graphic_ptr->Screen_X-1   Graphic_ptr->Screen_X-1
+
+#define BIT_PER_PAGE 8
 
 /**
   * 函    数：将OLED显存数组全部清零
@@ -24,9 +32,9 @@
 void Graphic_Clear(Graphic_TypeDef*Graphic_ptr)
 {
 	uint8_t i, j;
-	for (j = 0; j < 8; j ++)				//遍历8页
+	for (j = 0; j < Graphic_ptr->Screen_Page; j ++)				//遍历8页
 	{
-		for (i = 0; i < 128; i ++)			//遍历128列
+		for (i = 0; i < Graphic_ptr->Screen_X; i ++)			//遍历Graphic_ptr->Screen_X列
 		{
 			Graphic_ptr->DisplayBuf[j][i] = 0x00;	//将显存数组数据全部清零
 		}
@@ -35,10 +43,10 @@ void Graphic_Clear(Graphic_TypeDef*Graphic_ptr)
 
 /**
   * 函    数：将OLED显存数组部分清零
-  * 参    数：X 指定区域左上角的横坐标，范围：0~127
-  * 参    数：Y 指定区域左上角的纵坐标，范围：0~63
-  * 参    数：Width 指定区域的宽度，范围：0~128
-  * 参    数：Height 指定区域的高度，范围：0~64
+  * 参    数：X 指定区域左上角的横坐标，范围：0~Graphic_ptr->Screen_X-1
+  * 参    数：Y 指定区域左上角的纵坐标，范围：0~Graphic_ptr->Screen_Y-1
+  * 参    数：Width 指定区域的宽度，范围：0~Graphic_ptr->Screen_X
+  * 参    数：Height 指定区域的高度，范围：0~Graphic_ptr->Screen_Y
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
@@ -47,16 +55,16 @@ void Graphic_ClearArea(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t
 	uint8_t i, j;
 	
 	/*参数检查，保证指定区域不会超出屏幕范围*/
-	if (X > 127) {return;}
-	if (Y > 63) {return;}
-	if (X + Width > 128) {Width = 128 - X;}
-	if (Y + Height > 64) {Height = 64 - Y;}
+	if (X > Graphic_ptr->Screen_X-1) {return;}
+	if (Y > Graphic_ptr->Screen_Y-1) {return;}
+	if (X + Width > Graphic_ptr->Screen_X) {Width = Graphic_ptr->Screen_X - X;}
+	if (Y + Height > Graphic_ptr->Screen_Y) {Height = Graphic_ptr->Screen_Y - Y;}
 	
 	for (j = Y; j < Y + Height; j ++)		//遍历指定页
 	{
 		for (i = X; i < X + Width; i ++)	//遍历指定列
 		{
-			Graphic_ptr->DisplayBuf[j / 8][i] &= ~(0x01 << (j % 8));	//将显存数组指定数据清零
+			Graphic_ptr->DisplayBuf[j / BIT_PER_PAGE][i] &= ~(0x01 << (j % 8));	//将显存数组指定数据清零
 		}
 	}
 }
@@ -70,9 +78,9 @@ void Graphic_ClearArea(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t
 void Graphic_Reverse(Graphic_TypeDef*Graphic_ptr)
 {
 	uint8_t i, j;
-	for (j = 0; j < 8; j ++)				//遍历8页
+	for (j = 0; j < Graphic_ptr->Screen_Page; j ++)				//遍历8页
 	{
-		for (i = 0; i < 128; i ++)			//遍历128列
+		for (i = 0; i < Graphic_ptr->Screen_X; i ++)			//遍历Graphic_ptr->Screen_X列
 		{
 			Graphic_ptr->DisplayBuf[j][i] ^= 0xFF;	//将显存数组数据全部取反
 		}
@@ -81,10 +89,10 @@ void Graphic_Reverse(Graphic_TypeDef*Graphic_ptr)
 	
 /**
   * 函    数：将OLED显存数组部分取反
-  * 参    数：X 指定区域左上角的横坐标，范围：0~127
-  * 参    数：Y 指定区域左上角的纵坐标，范围：0~63
-  * 参    数：Width 指定区域的宽度，范围：0~128
-  * 参    数：Height 指定区域的高度，范围：0~64
+  * 参    数：X 指定区域左上角的横坐标，范围：0~Graphic_ptr->Screen_X-1
+  * 参    数：Y 指定区域左上角的纵坐标，范围：0~Graphic_ptr->Screen_Y-1
+  * 参    数：Width 指定区域的宽度，范围：0~Graphic_ptr->Screen_X
+  * 参    数：Height 指定区域的高度，范围：0~Graphic_ptr->Screen_Y
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
@@ -93,24 +101,24 @@ void Graphic_ReverseArea(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8
 	uint8_t i, j;
 	
 	/*参数检查，保证指定区域不会超出屏幕范围*/
-	if (X > 127) {return;}
-	if (Y > 63) {return;}
-	if (X + Width > 128) {Width = 128 - X;}
-	if (Y + Height > 64) {Height = 64 - Y;}
+	if (X > Graphic_ptr->Screen_X-1) {return;}
+	if (Y > Graphic_ptr->Screen_Y-1) {return;}
+	if (X + Width > Graphic_ptr->Screen_X) {Width = Graphic_ptr->Screen_X - X;}
+	if (Y + Height > Graphic_ptr->Screen_Y) {Height = Graphic_ptr->Screen_Y - Y;}
 	
 	for (j = Y; j < Y + Height; j ++)		//遍历指定页
 	{
 		for (i = X; i < X + Width; i ++)	//遍历指定列
 		{
-			Graphic_ptr->DisplayBuf[j / 8][i] ^= 0x01 << (j % 8);	//将显存数组指定数据取反
+			Graphic_ptr->DisplayBuf[j / BIT_PER_PAGE][i] ^= 0x01 << (j % 8);	//将显存数组指定数据取反
 		}
 	}
 }
 
 /**
   * 函    数：OLED显示一个字符
-  * 参    数：X 指定字符左上角的横坐标，范围：0~127
-  * 参    数：Y 指定字符左上角的纵坐标，范围：0~63
+  * 参    数：X 指定字符左上角的横坐标，范围：0~Graphic_ptr->Screen_X-1
+  * 参    数：Y 指定字符左上角的纵坐标，范围：0~Graphic_ptr->Screen_Y-1
   * 参    数：Char 指定要显示的字符，范围：ASCII码可见字符
   * 参    数：FontSize 指定字体大小
   *           范围：Graphic_8X16		宽8像素，高16像素
@@ -134,8 +142,8 @@ void Graphic_ShowChar(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, char Cha
 
 /**
   * 函    数：OLED显示字符串
-  * 参    数：X 指定字符串左上角的横坐标，范围：0~127
-  * 参    数：Y 指定字符串左上角的纵坐标，范围：0~63
+  * 参    数：X 指定字符串左上角的横坐标，范围：0~Graphic_ptr->Screen_X-1
+  * 参    数：Y 指定字符串左上角的纵坐标，范围：0~Graphic_ptr->Screen_Y-1
   * 参    数：String 指定要显示的字符串，范围：ASCII码可见字符组成的字符串
   * 参    数：FontSize 指定字体大小
   *           范围：Graphic_8X16		宽8像素，高16像素
@@ -155,8 +163,8 @@ void Graphic_ShowString(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, char *
 
 /**
   * 函    数：OLED显示数字（十进制，正整数）
-  * 参    数：X 指定数字左上角的横坐标，范围：0~127
-  * 参    数：Y 指定数字左上角的纵坐标，范围：0~63
+  * 参    数：X 指定数字左上角的横坐标，范围：0~Graphic_ptr->Screen_X-1
+  * 参    数：Y 指定数字左上角的纵坐标，范围：0~Graphic_ptr->Screen_Y-1
   * 参    数：Number 指定要显示的数字，范围：0~4294967295
   * 参    数：Length 指定数字的长度，范围：0~10
   * 参    数：FontSize 指定字体大小
@@ -179,8 +187,8 @@ void Graphic_ShowNum(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint32_t 
 
 /**
   * 函    数：OLED显示有符号数字（十进制，整数）
-  * 参    数：X 指定数字左上角的横坐标，范围：0~127
-  * 参    数：Y 指定数字左上角的纵坐标，范围：0~63
+  * 参    数：X 指定数字左上角的横坐标，范围：0~Graphic_ptr->Screen_X-1
+  * 参    数：Y 指定数字左上角的纵坐标，范围：0~Graphic_ptr->Screen_Y-1
   * 参    数：Number 指定要显示的数字，范围：-2147483648~2147483647
   * 参    数：Length 指定数字的长度，范围：0~10
   * 参    数：FontSize 指定字体大小
@@ -216,8 +224,8 @@ void Graphic_ShowSignedNum(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, int
 
 /**
   * 函    数：OLED显示十六进制数字（十六进制，正整数）
-  * 参    数：X 指定数字左上角的横坐标，范围：0~127
-  * 参    数：Y 指定数字左上角的纵坐标，范围：0~63
+  * 参    数：X 指定数字左上角的横坐标，范围：0~Graphic_ptr->Screen_X-1
+  * 参    数：Y 指定数字左上角的纵坐标，范围：0~Graphic_ptr->Screen_Y-1
   * 参    数：Number 指定要显示的数字，范围：0x00000000~0xFFFFFFFF
   * 参    数：Length 指定数字的长度，范围：0~8
   * 参    数：FontSize 指定字体大小
@@ -251,8 +259,8 @@ void Graphic_ShowHexNum(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint32
 
 /**
   * 函    数：OLED显示二进制数字（二进制，正整数）
-  * 参    数：X 指定数字左上角的横坐标，范围：0~127
-  * 参    数：Y 指定数字左上角的纵坐标，范围：0~63
+  * 参    数：X 指定数字左上角的横坐标，范围：0~Graphic_ptr->Screen_X-1
+  * 参    数：Y 指定数字左上角的纵坐标，范围：0~Graphic_ptr->Screen_Y-1
   * 参    数：Number 指定要显示的数字，范围：0x00000000~0xFFFFFFFF
   * 参    数：Length 指定数字的长度，范围：0~16
   * 参    数：FontSize 指定字体大小
@@ -275,8 +283,8 @@ void Graphic_ShowBinNum(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint32
 
 /**
   * 函    数：OLED显示浮点数字（十进制，小数）
-  * 参    数：X 指定数字左上角的横坐标，范围：0~127
-  * 参    数：Y 指定数字左上角的纵坐标，范围：0~63
+  * 参    数：X 指定数字左上角的横坐标，范围：0~Graphic_ptr->Screen_X-1
+  * 参    数：Y 指定数字左上角的纵坐标，范围：0~Graphic_ptr->Screen_Y-1
   * 参    数：Number 指定要显示的数字，范围：-4294967295.0~4294967295.0
   * 参    数：IntLength 指定数字的整数位长度，范围：0~10
   * 参    数：FraLength 指定数字的小数位长度，范围：0~9，小数进行四舍五入显示
@@ -319,8 +327,8 @@ void Graphic_ShowFloatNum(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, doub
 
 /**
   * 函    数：OLED显示汉字串
-  * 参    数：X 指定汉字串左上角的横坐标，范围：0~127
-  * 参    数：Y 指定汉字串左上角的纵坐标，范围：0~63
+  * 参    数：X 指定汉字串左上角的横坐标，范围：0~Graphic_ptr->Screen_X-1
+  * 参    数：Y 指定汉字串左上角的纵坐标，范围：0~Graphic_ptr->Screen_Y-1
   * 参    数：Chinese 指定要显示的汉字串，范围：必须全部为汉字或者全角字符，不要加入任何半角字符
   *           显示的汉字需要在Graphic_Data.c里的Graphic_CF16x16数组定义
   *           未找到指定汉字时，会显示默认图形（一个方框，内部一个问号）
@@ -363,10 +371,10 @@ void Graphic_ShowChinese(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, char 
 
 /**
   * 函    数：OLED显示图像
-  * 参    数：X 指定图像左上角的横坐标，范围：0~127
-  * 参    数：Y 指定图像左上角的纵坐标，范围：0~63
-  * 参    数：Width 指定图像的宽度，范围：0~128
-  * 参    数：Height 指定图像的高度，范围：0~64
+  * 参    数：X 指定图像左上角的横坐标，范围：0~Graphic_ptr->Screen_X-1
+  * 参    数：Y 指定图像左上角的纵坐标，范围：0~Graphic_ptr->Screen_Y-1
+  * 参    数：Width 指定图像的宽度，范围：0~Graphic_ptr->Screen_X
+  * 参    数：Height 指定图像的高度，范围：0~Graphic_ptr->Screen_Y
   * 参    数：Image 指定要显示的图像
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
@@ -376,8 +384,8 @@ void Graphic_ShowImage(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t
 	uint8_t i, j;
 	
 	/*参数检查，保证指定图像不会超出屏幕范围*/
-	if (X > 127) {return;}
-	if (Y > 63) {return;}
+	if (X > Graphic_ptr->Screen_X-1) {return;}
+	if (Y > Graphic_ptr->Screen_Y-1) {return;}
 	
 	/*将图像所在区域清空*/
 	Graphic_ClearArea(Graphic_ptr,X, Y, Width, Height);
@@ -390,15 +398,15 @@ void Graphic_ShowImage(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t
 		for (i = 0; i < Width; i ++)
 		{
 			/*超出边界，则跳过显示*/
-			if (X + i > 127) {break;}
-			if (Y / 8 + j > 7) {return;}
+			if (X + i > Graphic_ptr->Screen_X-1) {break;}
+			if (Y / 8 + j > Graphic_ptr->Screen_Page-1) {return;}
 			
 			/*显示图像在当前页的内容*/
 			Graphic_ptr->DisplayBuf[Y / 8 + j][X + i] |= Image[j * Width + i] << (Y % 8);
 			
 			/*超出边界，则跳过显示*/
 			/*使用continue的目的是，下一页超出边界时，上一页的后续内容还需要继续显示*/
-			if (Y / 8 + j + 1 > 7) {continue;}
+			if (Y / 8 + j + 1 > Graphic_ptr->Screen_Page-1) {continue;}
 			
 			/*显示图像在下一页的内容*/
 			Graphic_ptr->DisplayBuf[Y / 8 + j + 1][X + i] |= Image[j * Width + i] >> (8 - Y % 8);
@@ -408,8 +416,8 @@ void Graphic_ShowImage(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t
 
 /**
   * 函    数：OLED使用printf函数打印格式化字符串
-  * 参    数：X 指定格式化字符串左上角的横坐标，范围：0~127
-  * 参    数：Y 指定格式化字符串左上角的纵坐标，范围：0~63
+  * 参    数：X 指定格式化字符串左上角的横坐标，范围：0~Graphic_ptr->Screen_X-1
+  * 参    数：Y 指定格式化字符串左上角的纵坐标，范围：0~Graphic_ptr->Screen_Y-1
   * 参    数：FontSize 指定字体大小
   *           范围：Graphic_8X16		宽8像素，高16像素
   *                 Graphic_6X8		宽6像素，高8像素
@@ -430,16 +438,16 @@ void Graphic_Printf(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_t Fo
 
 /**
   * 函    数：OLED在指定位置画一个点
-  * 参    数：X 指定点的横坐标，范围：0~127
-  * 参    数：Y 指定点的纵坐标，范围：0~63
+  * 参    数：X 指定点的横坐标，范围：0~Graphic_ptr->Screen_X-1
+  * 参    数：Y 指定点的纵坐标，范围：0~Graphic_ptr->Screen_Y-1
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
 void Graphic_DrawPoint(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y)
 {
 	/*参数检查，保证指定位置不会超出屏幕范围*/
-	if (X > 127) {return;}
-	if (Y > 63) {return;}
+	if (X > Graphic_ptr->Screen_X-1) {return;}
+	if (Y > Graphic_ptr->Screen_Y-1) {return;}
 	
 	/*将显存数组指定位置的一个Bit数据置1*/
 	Graphic_ptr->DisplayBuf[Y / 8][X] |= 0x01 << (Y % 8);
@@ -447,15 +455,15 @@ void Graphic_DrawPoint(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y)
 
 /**
   * 函    数：OLED获取指定位置点的值
-  * 参    数：X 指定点的横坐标，范围：0~127
-  * 参    数：Y 指定点的纵坐标，范围：0~63
+  * 参    数：X 指定点的横坐标，范围：0~Graphic_ptr->Screen_X-1
+  * 参    数：Y 指定点的纵坐标，范围：0~Graphic_ptr->Screen_Y-1
   * 返 回 值：指定位置点是否处于点亮状态，1：点亮，0：熄灭
   */
 uint8_t Graphic_GetPoint(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y)
 {
 	/*参数检查，保证指定位置不会超出屏幕范围*/
-	if (X > 127) {return 0;}
-	if (Y > 63) {return 0;}
+	if (X > Graphic_ptr->Screen_X-1) {return 0;}
+	if (Y > Graphic_ptr->Screen_Y-1) {return 0;}
 	
 	/*判断指定位置的数据*/
 	if (Graphic_ptr->DisplayBuf[Y / 8][X] & 0x01 << (Y % 8))
@@ -468,10 +476,10 @@ uint8_t Graphic_GetPoint(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y)
 
 /**
   * 函    数：OLED画线
-  * 参    数：X0 指定一个端点的横坐标，范围：0~127
-  * 参    数：Y0 指定一个端点的纵坐标，范围：0~63
-  * 参    数：X1 指定另一个端点的横坐标，范围：0~127
-  * 参    数：Y1 指定另一个端点的纵坐标，范围：0~63
+  * 参    数：X0 指定一个端点的横坐标，范围：0~Graphic_ptr->Screen_X-1
+  * 参    数：Y0 指定一个端点的纵坐标，范围：0~Graphic_ptr->Screen_Y-1
+  * 参    数：X1 指定另一个端点的横坐标，范围：0~Graphic_ptr->Screen_X-1
+  * 参    数：Y1 指定另一个端点的纵坐标，范围：0~Graphic_ptr->Screen_Y-1
   * 返 回 值：无
   * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
   */
@@ -579,10 +587,10 @@ void Graphic_DrawLine(Graphic_TypeDef*Graphic_ptr,uint8_t X0, uint8_t Y0, uint8_
 
 /**
   * 函    数：OLED矩形
-  * 参    数：X 指定矩形左上角的横坐标，范围：0~127
-  * 参    数：Y 指定矩形左上角的纵坐标，范围：0~63
-  * 参    数：Width 指定矩形的宽度，范围：0~128
-  * 参    数：Height 指定矩形的高度，范围：0~64
+  * 参    数：X 指定矩形左上角的横坐标，范围：0~Graphic_ptr->Screen_X-1
+  * 参    数：Y 指定矩形左上角的纵坐标，范围：0~Graphic_ptr->Screen_Y-1
+  * 参    数：Width 指定矩形的宽度，范围：0~Graphic_ptr->Screen_X
+  * 参    数：Height 指定矩形的高度，范围：0~Graphic_ptr->Screen_Y
   * 参    数：IsFilled 指定矩形是否填充
   *           范围：Graphic_UNFILLED		不填充
   *                 Graphic_FILLED			填充
@@ -624,12 +632,12 @@ void Graphic_DrawRectangle(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uin
 
 /**
   * 函    数：OLED三角形
-  * 参    数：X0 指定第一个端点的横坐标，范围：0~127
-  * 参    数：Y0 指定第一个端点的纵坐标，范围：0~63
-  * 参    数：X1 指定第二个端点的横坐标，范围：0~127
-  * 参    数：Y1 指定第二个端点的纵坐标，范围：0~63
-  * 参    数：X2 指定第三个端点的横坐标，范围：0~127
-  * 参    数：Y2 指定第三个端点的纵坐标，范围：0~63
+  * 参    数：X0 指定第一个端点的横坐标，范围：0~Graphic_ptr->Screen_X-1
+  * 参    数：Y0 指定第一个端点的纵坐标，范围：0~Graphic_ptr->Screen_Y-1
+  * 参    数：X1 指定第二个端点的横坐标，范围：0~Graphic_ptr->Screen_X-1
+  * 参    数：Y1 指定第二个端点的纵坐标，范围：0~Graphic_ptr->Screen_Y-1
+  * 参    数：X2 指定第三个端点的横坐标，范围：0~Graphic_ptr->Screen_X-1
+  * 参    数：Y2 指定第三个端点的纵坐标，范围：0~Graphic_ptr->Screen_Y-1
   * 参    数：IsFilled 指定三角形是否填充
   *           范围：Graphic_UNFILLED		不填充
   *                 Graphic_FILLED			填充
@@ -682,8 +690,8 @@ void Graphic_DrawTriangle(Graphic_TypeDef*Graphic_ptr,uint8_t X0, uint8_t Y0, ui
 
 /**
   * 函    数：OLED画圆
-  * 参    数：X 指定圆的圆心横坐标，范围：0~127
-  * 参    数：Y 指定圆的圆心纵坐标，范围：0~63
+  * 参    数：X 指定圆的圆心横坐标，范围：0~Graphic_ptr->Screen_X-1
+  * 参    数：Y 指定圆的圆心纵坐标，范围：0~Graphic_ptr->Screen_Y-1
   * 参    数：Radius 指定圆的半径，范围：0~255
   * 参    数：IsFilled 指定圆是否填充
   *           范围：Graphic_UNFILLED		不填充
@@ -765,8 +773,8 @@ void Graphic_DrawCircle(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8_
 
 /**
   * 函    数：OLED画椭圆
-  * 参    数：X 指定椭圆的圆心横坐标，范围：0~127
-  * 参    数：Y 指定椭圆的圆心纵坐标，范围：0~63
+  * 参    数：X 指定椭圆的圆心横坐标，范围：0~Graphic_ptr->Screen_X-1
+  * 参    数：Y 指定椭圆的圆心纵坐标，范围：0~Graphic_ptr->Screen_Y-1
   * 参    数：A 指定椭圆的横向半轴长度，范围：0~255
   * 参    数：B 指定椭圆的纵向半轴长度，范围：0~255
   * 参    数：IsFilled 指定椭圆是否填充
@@ -875,8 +883,8 @@ void Graphic_DrawEllipse(Graphic_TypeDef*Graphic_ptr,uint8_t X, uint8_t Y, uint8
 
 /**
   * 函    数：OLED画圆弧
-  * 参    数：X 指定圆弧的圆心横坐标，范围：0~127
-  * 参    数：Y 指定圆弧的圆心纵坐标，范围：0~63
+  * 参    数：X 指定圆弧的圆心横坐标，范围：0~Graphic_ptr->Screen_X-1
+  * 参    数：Y 指定圆弧的圆心纵坐标，范围：0~Graphic_ptr->Screen_Y-1
   * 参    数：Radius 指定圆弧的半径，范围：0~255
   * 参    数：StartAngle 指定圆弧的起始角度，范围：-180~180
   *           水平向右为0度，水平向左为180度或-180度，下方为正数，上方为负数，顺时针旋转
