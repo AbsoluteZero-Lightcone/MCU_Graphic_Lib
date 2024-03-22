@@ -2,31 +2,12 @@
   ******************************************************************************
   * @file    Graphic_BufferInterface.c
   * @author  Lightcone
-  * @version V1.0.2
+  * @version V1.0.3
   * @date    2024-03-22
   * @brief   图形显示缓冲区数据结构抽象接口层
   ******************************************************************************
   */
 #include "Graphic.h"
-// 数据大小设置
-typedef uint8_t X_Data;
-typedef uint8_t Y_Data;
-typedef uint8_t Col_Data;
-typedef uint8_t Page_Data;
-typedef uint8_t Bias_Data;
-typedef uint8_t bool;
-typedef uint8_t Count;
-
-typedef struct{
-	Col_Data Col;
-	Page_Data Page;
-	Bias_Data Bias;
-}Buffer_Point;
-
-typedef struct{
-	X_Data X;
-	Y_Data Y;
-}Graphic_Point;
 
 // 等效构造函数
 Buffer_Point PointXY_to_PointPage(Graphic_Point XY){
@@ -56,9 +37,9 @@ bool Graphic_Buffer_ReadXY(Graphic_TypeDef*Graphic_ptr,X_Data X,Y_Data Y){
 }
 bool isLegalXY(Graphic_TypeDef*Graphic_ptr,X_Data X,Y_Data Y){
 	if(
-		X < 0 ||
+		//X < 0 ||
 		X >= Graphic_ptr->Screen_X ||
-		Y < 0 ||
+		//Y < 0 ||
 		Y >= Graphic_ptr->Screen_Y
 	)return 0;
 	return 1;
@@ -76,9 +57,9 @@ bool Graphic_Buffer_ReadPoint(Graphic_TypeDef*Graphic_ptr,Graphic_Point XY){
 
 bool isLegalPoint(Graphic_TypeDef*Graphic_ptr,Graphic_Point XY){
 	if(
-		XY.X < 0 ||
+		//XY.X < 0 ||
 		XY.X >= Graphic_ptr->Screen_X ||
-		XY.Y < 0 ||
+		//XY.Y < 0 ||
 		XY.Y >= Graphic_ptr->Screen_Y
 	)return 0;
 	return 1;
