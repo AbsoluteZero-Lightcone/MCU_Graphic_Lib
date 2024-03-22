@@ -1,18 +1,16 @@
 /**
   ******************************************************************************
-  * @file    Graphic_Interface.h
+  * @file    Graphic_Database.h
   * @author  Lightcone
-  * @version V1.0.1
+  * @version V1.0.0
   * @date    2024-03-22
-  * @brief   图形显示硬件接口层
+  * @brief   显示数据库
   ******************************************************************************
   */
+#ifndef __GRAPHIC_DATABASE_H
+#define __GRAPHIC_DATABASE_H
+#include <stdint.h>
 
-#ifndef __GRAPHIC_INTERFACE_H
-#define __GRAPHIC_INTERFACE_H
 
-#include "Graphic.h"
-
-#endif /* __GRAPHIC_INTERFACE_H */
-
+#endif /* __GRAPHIC_DATABASE_H */
 /******************* Absolute Zero Studio - Lightcone **********END OF FILE****/

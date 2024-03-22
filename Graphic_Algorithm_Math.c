@@ -1,18 +1,17 @@
 /**
   ******************************************************************************
-  * @file    Graphic_Interface.h
+  * @file    Graphic_Algorithm_Math.c
   * @author  Lightcone
-  * @version V1.0.1
+  * @version V1.0.0
   * @date    2024-03-22
-  * @brief   图形显示硬件接口层
+  * @brief   图形显示算法层使用的数学工具
   ******************************************************************************
   */
-
-#ifndef __GRAPHIC_INTERFACE_H
-#define __GRAPHIC_INTERFACE_H
-
 #include "Graphic.h"
+#include <string.h>
+#include <math.h>
+#include <stdio.h>
+#include <stdarg.h>
 
-#endif /* __GRAPHIC_INTERFACE_H */
 
 /******************* Absolute Zero Studio - Lightcone **********END OF FILE****/

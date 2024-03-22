@@ -1,14 +1,14 @@
 /**
   ******************************************************************************
-  * @file    Graphic_Data.h
+  * @file    Graphic_Data_old.h
   * @author  Lightcone & 江协科技
-  * @version V1.0.1
-  * @date    2024-03-21
+  * @version V1.0.2
+  * @date    2024-03-22
   * @brief   显示数据库
   ******************************************************************************
   */
-#ifndef __GRAPHIC_DATA_H
-#define __GRAPHIC_DATA_H
+#ifndef __GRAPHIC_DATA_OLD_H
+#define __GRAPHIC_DATA_OLD_H
 
 #include <stdint.h>
 
@@ -34,5 +34,5 @@ extern const uint8_t Diode[];
 /*按照上面的格式，在这个位置加入新的图像数据声明*/
 //...
 
-#endif /* __GRAPHIC_DATA_H */
+#endif /* __GRAPHIC_DATA_OLD_H */
 /******************* Absolute Zero Studio - Lightcone **********END OF FILE****/
