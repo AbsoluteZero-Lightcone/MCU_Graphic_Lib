@@ -1,19 +1,14 @@
 /**
   ******************************************************************************
-  * @file    Graphic_test.h
+  * @file    Device_Enum_Graphic.c
   * @author  Lightcone
   * @version V1.0.0
   * @date    2024-03-22
-  * @brief   图形显示库测试环境
+  * @brief   图形设备枚举
   ******************************************************************************
   */
-
-#ifndef __GRAPHIC_TEST_H
-#define __GRAPHIC_TEST_H
 #include "Graphic.h"
 #include "SSD1306_Driver.h"
-#include "74HC138.h"
 
 
-#endif /* __GRAPHIC_TEST_H */
 /******************* Absolute Zero Studio - Lightcone **********END OF FILE****/
