@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    Graphic.h
   * @author  Lightcone
-  * @version V1.1.1
+  * @version V1.1.2
   * @date    2024-03-22
   * @brief   图形显示库
   ******************************************************************************
@@ -52,12 +52,22 @@ typedef struct{
 // 前后端分离
 typedef struct{
 	Device_Enum_Data Device_Enum; // 设备枚举
+	Graphic_Buffer Buffer;
+	/*
+	直接解决了共享显存问题，
+	动态更改buffer的指向即可切换哪些屏幕需要共享显示内容，
+	甚至使用额外的Buffer，
+	能实现类似后台渲染多任务（后台任务）/多个桌面的效果
+	但是这要求前后端绝对分离，绘图函数对Buffer操作，
+	而非传入Graphic指针再访问其中的buffer
+	这是降低代码耦合性的好处
+*/
 	void (*Hardware_SetCursor_Callback)(Device_Enum_Data Device_Enum,uint8_t x,uint8_t y);
 	void (*Hardware_Update_Callback)(Device_Enum_Data Device_Enum);
 	void (*Hardware_UpdateArea_Callback)(Device_Enum_Data Device_Enum,uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height);
 	void (*Hardware_Clear_Callback)(Device_Enum_Data Device_Enum);
-	Graphic_Buffer Buffer;
-}Graphic_Object;
+	// 还可扩展更多基本接口
+	}Graphic_Object;
 
 
 
