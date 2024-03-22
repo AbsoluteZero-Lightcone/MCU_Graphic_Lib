@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    Device_Enum_Graphic.c
   * @author  Lightcone
-  * @version V1.0.2
+  * @version V1.0.3
   * @date    2024-03-22
   * @brief   图形设备枚举
   ******************************************************************************
@@ -34,12 +34,27 @@ void Hardware_SetCursor_Callback(Device_Enum_Data Device_Enum,uint8_t x,uint8_t 
 void Hardware_Update_Callback(Device_Enum_Data Device_Enum);
 void Hardware_UpdateArea_Callback(Device_Enum_Data Device_Enum,uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height);
 
+union Buffer_Type{
+	uint8_t (*SSD1306_Buffer_Type)[8][128];
+	uint8_t (*x_Buffer_Type)[8][128];
+};
 // 开辟内存
 uint8_t DisplayBuf_Graphic_Device_SSD1306[Enum_SSD1306_MAX][8][128];
 uint8_t DisplayBuf_Graphic_Device_x[Enum_x_MAX][8][128];
 // 问题：指针存储类型不能表征数据长度，从而不能使用下标访问
 // 此处以及Buffer实现都需要改
-uint8_t ***DisplayBuf_List[Graphic_Device_MAX] = {// 此处的语义为先读取[]表明是数组，再读取uint8_t *** 表示数组内容是指针
+// 二级指针传递二维数组可行性的讨论：
+/* 
+uint8_t ** 二级指针存储了一级指针的距离？可迭代一级指针？
+二级指针能够加减，但是二维数组强转二级指针会丢失数据吗
+*/
+
+// 此处的三级指针就是为了存储数据长度可能不同的数据，本身就不可能迭代，
+// 这便失去了指针方便访问的意义，舍弃这一方案？？？
+
+//用联合能否实现多类型的兼容？
+
+uint8_t ****DisplayBuf_List = {// 此处的语义为先读取[]表明是数组，再读取uint8_t *** 表示数组内容是指针
 	[Graphic_Device_SSD1306] = (uint8_t***)DisplayBuf_Graphic_Device_SSD1306,
 	[Graphic_Device_x] = (uint8_t***)DisplayBuf_Graphic_Device_x,
 };
