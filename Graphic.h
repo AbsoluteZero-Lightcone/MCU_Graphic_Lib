@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    Graphic.h
   * @author  Lightcone
-  * @version V1.1.2
+  * @version V1.1.3
   * @date    2024-03-22
   * @brief   图形显示库
   ******************************************************************************
@@ -38,11 +38,12 @@ typedef struct{
 	Y_Data Y;
 }Graphic_Point;
 
+
 /** 
   * @brief  显示缓冲区结构体
   */
 typedef struct{
-	uint8_t **DisplayBuf; // 指向实际创建出的显示缓冲区的内存存储区域
+	uint8_t ** DisplayBuf; // 指向实际创建出的显示缓冲区的内存存储区域
 	uint8_t Screen_X;
 	uint8_t Screen_Y;
 	uint8_t Buffer_Page;
@@ -52,7 +53,7 @@ typedef struct{
 // 前后端分离
 typedef struct{
 	Device_Enum_Data Device_Enum; // 设备枚举
-	Graphic_Buffer Buffer;
+	Graphic_Buffer * Buffer;
 	/*
 	直接解决了共享显存问题，
 	动态更改buffer的指向即可切换哪些屏幕需要共享显示内容，
