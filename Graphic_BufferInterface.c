@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    Graphic_BufferInterface.c
   * @author  Lightcone
-  * @version V1.1.0
+  * @version V1.2.0
   * @date    2024-03-22
   * @brief   图形显示缓冲区数据结构抽象接口层
   ******************************************************************************
@@ -26,14 +26,15 @@ Buffer_Point XY_toPointPage(X_Data X,Y_Data Y){
 	};
 	return p;
 }
+
 void Graphic_Buffer_WriteXY(Graphic_Buffer*Graphic_Buffer_ptr,X_Data X,Y_Data Y,bool val){
 	Buffer_Point p = XY_toPointPage(X,Y);
-	if(val)Graphic_Buffer_ptr->DisplayBuf[p.Page][p.Col] |= (1 << p.Bias);
-	else Graphic_Buffer_ptr->DisplayBuf[p.Page][p.Col] &= (1 << p.Bias);
+	if(val)*(((uint8_t*)Graphic_Buffer_ptr->DisplayBuf) + p.Page*Graphic_Buffer_ptr->Buffer_Page + p.Col) |= (1 << p.Bias);
+	else *(((uint8_t*)Graphic_Buffer_ptr->DisplayBuf) + p.Page*Graphic_Buffer_ptr->Buffer_Page + p.Col) &= (1 << p.Bias);
 }
 bool Graphic_Buffer_ReadXY(Graphic_Buffer*Graphic_Buffer_ptr,X_Data X,Y_Data Y){
 	Buffer_Point p = XY_toPointPage(X,Y);
-	return Graphic_Buffer_ptr->DisplayBuf[p.Page][p.Col] &= (0x01 << p.Bias);
+	return *(((uint8_t*)Graphic_Buffer_ptr->DisplayBuf) + p.Page*Graphic_Buffer_ptr->Buffer_Page + p.Col) &= (0x01 << p.Bias);
 }
 bool isLegalXY(Graphic_Buffer*Graphic_Buffer_ptr,X_Data X,Y_Data Y){
 	if(
@@ -47,12 +48,12 @@ bool isLegalXY(Graphic_Buffer*Graphic_Buffer_ptr,X_Data X,Y_Data Y){
 
 void Graphic_Buffer_WritePoint(Graphic_Buffer*Graphic_Buffer_ptr,Graphic_Point XY,bool val){
 	Buffer_Point p = PointXY_to_PointPage(XY);
-	if(val)Graphic_Buffer_ptr->DisplayBuf[p.Page][p.Col] |= (1 << p.Bias);
-	else Graphic_Buffer_ptr->DisplayBuf[p.Page][p.Col] &= (1 << p.Bias);
+	if(val)*(((uint8_t*)Graphic_Buffer_ptr->DisplayBuf) + p.Page*Graphic_Buffer_ptr->Buffer_Page + p.Col) |= (1 << p.Bias);
+	else *(((uint8_t*)Graphic_Buffer_ptr->DisplayBuf) + p.Page*Graphic_Buffer_ptr->Buffer_Page + p.Col) &= (1 << p.Bias);
 }
 bool Graphic_Buffer_ReadPoint(Graphic_Buffer*Graphic_Buffer_ptr,Graphic_Point XY){
 	Buffer_Point p = PointXY_to_PointPage(XY);
-	return Graphic_Buffer_ptr->DisplayBuf[p.Page][p.Col] &= (0x01 << p.Bias);
+	return *(((uint8_t*)Graphic_Buffer_ptr->DisplayBuf) + p.Page*Graphic_Buffer_ptr->Buffer_Page + p.Col) &= (0x01 << p.Bias);
 }
 
 bool isLegalPoint(Graphic_Buffer*Graphic_Buffer_ptr,Graphic_Point XY){
