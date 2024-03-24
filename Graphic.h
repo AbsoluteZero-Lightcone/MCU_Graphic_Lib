@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    Graphic.h
   * @author  Lightcone
-  * @version V1.2.0
+  * @version V1.3.0
   * @date    2024-03-24
   * @brief   图形显示库
   ******************************************************************************
@@ -53,7 +53,7 @@ typedef struct{
 // 前后端分离
 typedef struct{
 	Device_Enum_Data Device_Enum; // 设备枚举
-	Graphic_Buffer * Buffer;
+	Graphic_Buffer Buffer;
 	/*
 	直接解决了共享显存问题，
 	动态更改buffer的指向即可切换哪些屏幕需要共享显示内容，
@@ -63,9 +63,10 @@ typedef struct{
 	而非传入Graphic指针再访问其中的buffer
 	这是降低代码耦合性的好处
 */
-	void (*Hardware_SetCursor_Callback)(Device_Enum_Data Device_Enum,uint8_t x,uint8_t y);
-	void (*Hardware_Update_Callback)(Device_Enum_Data Device_Enum);
+// 必要硬件抽象接口函数：
 	void (*Hardware_UpdateArea_Callback)(Device_Enum_Data Device_Enum,uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height);
+// 可选功能接口函数：
+	void (*Hardware_Update_Callback)(Device_Enum_Data Device_Enum);
 	void (*Hardware_Clear_Callback)(Device_Enum_Data Device_Enum);
 	// 还可扩展更多基本接口
 	}Graphic_Object;
