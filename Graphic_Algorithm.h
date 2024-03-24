@@ -13,7 +13,7 @@
 #include "Graphic_Buffer.h"
 
 #define Graphic_Draw_Line(Graphic_ptr,P1,P2)\
-        Graphic_Draw_Line_DDA(Graphic_ptr,P1,P2)// 默认直线实现算法选择
+        Graphic_Draw_Line_Bresenham(Graphic_ptr,P1,P2)// 默认直线实现算法选择
 void Graphic_Draw_Line_DDA(Graphic_Object*Graphic_ptr,Graphic_Point P1,Graphic_Point P2);
 void Graphic_Draw_Line_TMP(Graphic_Object*Graphic_ptr,Graphic_Point P1,Graphic_Point P2);
 void Graphic_Draw_Line_Bresenham(Graphic_Object*Graphic_ptr,Graphic_Point P1,Graphic_Point P2);

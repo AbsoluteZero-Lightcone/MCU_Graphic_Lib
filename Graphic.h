@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    Graphic.h
   * @author  Lightcone
-  * @version V1.3.5
+  * @version V1.3.6
   * @date    2024-03-25
   * @brief   图形显示库
   ******************************************************************************
@@ -27,8 +27,8 @@ typedef uint8_t Device_Enum_Data;
 
 // 实际画布点对象
 typedef struct{
-	X_Data X;
-	Y_Data Y;
+	X_Data x;
+	Y_Data y;
 }Graphic_Point;
 
 
