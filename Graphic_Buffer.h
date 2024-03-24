@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    Graphic_Buffer.h
   * @author  Lightcone
-  * @version V1.2.1
+  * @version V1.2.2
   * @date    2024-03-25
   * @brief   操作图形显示缓冲区数据结构的工具库
   ******************************************************************************
@@ -12,6 +12,13 @@
 #define __GRAPHIC_BUFFER_H
 
 #include "Graphic.h"
+
+// 点对象存储结构
+typedef struct{
+	Col_Data Col;
+	Page_Data Page;
+	Bias_Data Bias; // 0~7
+}Buffer_Point;
 
 Buffer_Point PointXY_to_PointPage(Graphic_Point XY);
 Buffer_Point XY_toPointPage(X_Data X,Y_Data Y);

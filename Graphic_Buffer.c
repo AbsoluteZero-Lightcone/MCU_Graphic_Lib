@@ -2,13 +2,13 @@
   ******************************************************************************
   * @file    Graphic_Buffer.c
   * @author  Lightcone
-  * @version V1.2.1
+  * @version V1.2.2
   * @date    2024-03-25
   * @brief   操作图形显示缓冲区数据结构的工具库
   ******************************************************************************
   */
 #include "Graphic.h"
-
+#include "Graphic_Buffer.h"
 // 等效构造函数
 Buffer_Point PointXY_to_PointPage(Graphic_Point XY){
 	Buffer_Point p = {
