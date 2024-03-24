@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    Graphic.h
   * @author  Lightcone
-  * @version V1.3.0
+  * @version V1.3.1
   * @date    2024-03-24
   * @brief   图形显示库
   ******************************************************************************
@@ -12,6 +12,7 @@
 #define __GRAPHIC_H
 
 #include <stdint.h>
+#include "Device_Enum_Graphic.h"
 
 #define BIT_PER_PAGE 8
 

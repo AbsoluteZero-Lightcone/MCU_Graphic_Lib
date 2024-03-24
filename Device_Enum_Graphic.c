@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    Device_Enum_Graphic.c
   * @author  Lightcone
-  * @version V1.0.7
+  * @version V1.0.8
   * @date    2024-03-24
   * @brief   图形设备枚举
   ******************************************************************************
@@ -14,6 +14,73 @@
 // 开辟内存
 uint8_t DisplayBuf_Graphic_Device_SSD1306[Enum_SSD1306_MAX][8][128];
 uint8_t DisplayBuf_Graphic_Device_x[Enum_x_MAX][8][128];
+
+// 屏幕硬件层对象
+#define Board_SPI_SCK_GPIO	GPIOA
+#define Board_SPI_SCK_Pin	GPIO_Pin_7
+#define Board_SPI_SDA_GPIO	GPIOA
+#define Board_SPI_SDA_Pin	GPIO_Pin_5
+#define Board_SPI_DC_GPIO	GPIOB
+#define Board_SPI_DC_Pin	GPIO_Pin_10
+
+#include "74HC138.h"
+_74HC138_TypeDef Graphic_Device_SSD1306_CS_74HC138 = {
+		.A_GPIO=GPIOB,.A_Pin=GPIO_Pin_11,
+		.B_GPIO=GPIOB,.B_Pin=GPIO_Pin_12,
+		.C_GPIO=GPIOB,.C_Pin=GPIO_Pin_13
+	};
+const uint8_t Graphic_Device_SSD1306_CS_74HC138_Mapping[Enum_SSD1306_MAX] = {
+	[Enum_SSD1306_1] = 1,
+	[Enum_SSD1306_2] = 2,
+	[Enum_SSD1306_3] = 3,
+	[Enum_SSD1306_4] = 4,
+	[Enum_SSD1306_x] = 5,
+};
+void Graphic_Device_SSD1306_CS_Callback(Enum_SSD1306 Device_Enum){
+	_74HC138_Write(&Graphic_Device_SSD1306_CS_74HC138,Graphic_Device_SSD1306_CS_74HC138_Mapping[Device_Enum]);
+}
+SSD1306 Hardware_Graphic_Device_SSD1306[Enum_SSD1306_MAX] = {
+	[Enum_SSD1306_1] = {
+		.D0_GPIO  = Board_SPI_SCK_GPIO,.D0_Pin = Board_SPI_SCK_Pin,
+		.D1_GPIO  = Board_SPI_SDA_GPIO,.D1_Pin = Board_SPI_SDA_Pin,
+		.DC_GPIO  = Board_SPI_DC_GPIO ,.DC_Pin = Board_SPI_DC_Pin,
+		.RES_GPIO = GPIOG             ,.RES_Pin = GPIO_Pin_0,
+		.CS_Handler = Graphic_Device_SSD1306_CS_Callback,
+		.DisplayBuf = (uint8_t *)DisplayBuf_Graphic_Device_SSD1306[Enum_SSD1306_1]
+	},
+	[Enum_SSD1306_2] = {
+		.D0_GPIO  = Board_SPI_SCK_GPIO,.D0_Pin = Board_SPI_SCK_Pin,
+		.D1_GPIO  = Board_SPI_SDA_GPIO,.D1_Pin = Board_SPI_SDA_Pin,
+		.DC_GPIO  = Board_SPI_DC_GPIO ,.DC_Pin = Board_SPI_DC_Pin,
+		.RES_GPIO = GPIOG             ,.RES_Pin = GPIO_Pin_0,
+		.CS_Handler = Graphic_Device_SSD1306_CS_Callback,
+		.DisplayBuf = (uint8_t *)DisplayBuf_Graphic_Device_SSD1306[Enum_SSD1306_2]
+	},
+	[Enum_SSD1306_3] = {
+		.D0_GPIO  = Board_SPI_SCK_GPIO,.D0_Pin = Board_SPI_SCK_Pin,
+		.D1_GPIO  = Board_SPI_SDA_GPIO,.D1_Pin = Board_SPI_SDA_Pin,
+		.DC_GPIO  = Board_SPI_DC_GPIO ,.DC_Pin = Board_SPI_DC_Pin,
+		.RES_GPIO = GPIOG             ,.RES_Pin = GPIO_Pin_0,
+		.CS_Handler = Graphic_Device_SSD1306_CS_Callback,
+		.DisplayBuf = (uint8_t *)DisplayBuf_Graphic_Device_SSD1306[Enum_SSD1306_3]
+	},
+	[Enum_SSD1306_4] = {
+		.D0_GPIO  = Board_SPI_SCK_GPIO,.D0_Pin = Board_SPI_SCK_Pin,
+		.D1_GPIO  = Board_SPI_SDA_GPIO,.D1_Pin = Board_SPI_SDA_Pin,
+		.DC_GPIO  = Board_SPI_DC_GPIO ,.DC_Pin = Board_SPI_DC_Pin,
+		.RES_GPIO = GPIOG             ,.RES_Pin = GPIO_Pin_0,
+		.CS_Handler = Graphic_Device_SSD1306_CS_Callback,
+		.DisplayBuf = (uint8_t *)DisplayBuf_Graphic_Device_SSD1306[Enum_SSD1306_4]
+	},
+	[Enum_SSD1306_x] = {
+		.D0_GPIO  = Board_SPI_SCK_GPIO,.D0_Pin = Board_SPI_SCK_Pin,
+		.D1_GPIO  = Board_SPI_SDA_GPIO,.D1_Pin = Board_SPI_SDA_Pin,
+		.DC_GPIO  = Board_SPI_DC_GPIO ,.DC_Pin = Board_SPI_DC_Pin,
+		.RES_GPIO = GPIOB             ,.RES_Pin = GPIO_Pin_9,
+		.CS_Handler = Graphic_Device_SSD1306_CS_Callback,
+		.DisplayBuf = (uint8_t *)DisplayBuf_Graphic_Device_SSD1306[Enum_SSD1306_x]
+	}
+};
 
 void SSD1306_Hardware_UpdateArea_Callback(Device_Enum_Data Device_Enum,uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height);
 void SSD1306_Hardware_Update_Callback(Device_Enum_Data Device_Enum);
@@ -36,6 +103,7 @@ Graphic_Object SSD1306_List[Enum_SSD1306_MAX] = {
 	}
 };
 void SSD1306_Hardware_UpdateArea_Callback(Device_Enum_Data Device_Enum,uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height){
+	
 }
 
 // 若硬件抽象层未实现全局刷新功能，则使用下面的默认方案：

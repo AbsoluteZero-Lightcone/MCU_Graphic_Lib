@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    SSD1306_Driver.c
   * @author  Lightcone
-  * @version V3.0.0
+  * @version V3.0.1
   * @date    2024-03-24
   * @brief   OLED SSD1306硬件驱动层
   ******************************************************************************
@@ -15,7 +15,7 @@
 #define SSD1306_Write_D1(x)		GPIO_WriteBit(SSD1306_Struct_ptr->D1_GPIO, SSD1306_Struct_ptr->D1_Pin, (BitAction)(x))
 #define SSD1306_Write_RES(x)		GPIO_WriteBit(SSD1306_Struct_ptr->RES_GPIO, SSD1306_Struct_ptr->RES_Pin, (BitAction)(x))
 #define SSD1306_Write_DC(x)		GPIO_WriteBit(SSD1306_Struct_ptr->DC_GPIO, SSD1306_Struct_ptr->DC_Pin, (BitAction)(x))
-#define SSD1306_Write_CS(x)		SSD1306_Struct_ptr->CS_Handler()
+#define SSD1306_Write_CS(x)		SSD1306_Struct_ptr->CS_Handler(SSD1306_Struct_ptr->Device_Enum)
 
 void SSD1306_Pin_Init(SSD1306* SSD1306_Struct_ptr){
 	RCC_APB2PeriphClockCmd(to_RCC_APB2Periph(SSD1306_Struct_ptr->D0_GPIO), ENABLE);
@@ -148,11 +148,10 @@ void SSD1306_Update(SSD1306* SSD1306_Struct_ptr){
   * 如果更新区域Y轴只包含部分页，则同一页的剩余部分会跟随一起更新
   */
 void SSD1306_UpdateArea(SSD1306* SSD1306_Struct_ptr,uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height){
-	/*参数检查，保证指定区域不会超出屏幕范围*/
 	if (X > 127) {return;}
 	if (Y > 63) {return;}
-	if (X + Width > 128) {Width = 128 - X;}
-	if (Y + Height > 64) {Height = 64 - Y;}
+	if (X + Width > 128) {Width = 128 - X;}// 超出裁切
+	if (Y + Height > 64) {Height = 64 - Y;}// 超出裁切
 	
 	/*遍历指定区域涉及的相关页*/
 	/*(Y + Height - 1) / 8 + 1的目的是(Y + Height) / 8并向上取整*/
