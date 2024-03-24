@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    Device_Enum_SSD1306.h
   * @author  Lightcone
-  * @version V1.1.0
+  * @version V1.1.2
   * @date    2024-03-25
   * @brief   图形设备枚举
   ******************************************************************************
@@ -11,7 +11,7 @@
 #ifndef __DEVICE_ENUM_SSD1306_H
 #define __DEVICE_ENUM_SSD1306_H
 #include "Graphic.h"
-#include "SSD1306_Driver.h"
+#include "Device_Driver_SSD1306.h"
 
 typedef enum{
 	Enum_SSD1306_1,

@@ -2,14 +2,14 @@
   ******************************************************************************
   * @file    Device_Enum_SSD1306.c
   * @author  Lightcone
-  * @version V1.1.0
+  * @version V1.1.2
   * @date    2024-03-25
   * @brief   图形设备枚举
   ******************************************************************************
   */
 #include "Graphic.h"
 #include "Device_Enum_SSD1306.h"
-#include "SSD1306_Driver.h"
+#include "Device_Driver_SSD1306.h"
 
 // 开辟内存
 uint8_t DisplayBuf_Graphic_Device_SSD1306[Enum_SSD1306_MAX][8][128];

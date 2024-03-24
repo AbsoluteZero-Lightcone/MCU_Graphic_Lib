@@ -1,17 +1,17 @@
 /**
   ******************************************************************************
-  * @file    SSD1306_Driver.h
+  * @file    Device_Driver_SSD1306.h
   * @author  Lightcone
-  * @version V3.0.2
+  * @version V3.0.3
   * @date    2024-03-25
   * @brief   OLED SSD1306硬件驱动层 
   ******************************************************************************
   */
-#ifndef __SSD1306_DRIVER_H
-#define __SSD1306_DRIVER_H
+#ifndef __DEVICE_DRIVER_SSD1306_H
+#define __DEVICE_DRIVER_SSD1306_H
 #include "STM32Device.h"
-#define SSD1306_PAGE 8
-#define SSD1306_COL 128
+//#define SSD1306_PAGE 8
+//#define SSD1306_COL 128
 
 typedef uint8_t enum_data;
 
@@ -33,5 +33,5 @@ void SSD1306_UpdateArea(SSD1306* SSD1306_Struct_ptr,uint8_t X, uint8_t Y, uint8_
 void SSD1306_Update(SSD1306* SSD1306_Struct_ptr);
 void SSD1306_Clear(SSD1306* SSD1306_Struct_ptr);
 
-#endif /* __SSD1306_DRIVER_H */
+#endif /* __DEVICE_DRIVER_SSD1306_H */
 /******************* Absolute Zero Studio - Lightcone **********END OF FILE****/
