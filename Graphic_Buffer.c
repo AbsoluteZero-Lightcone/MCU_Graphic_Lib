@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    Graphic_Buffer.c
   * @author  Lightcone
-  * @version V1.2.2
+  * @version V1.2.3
   * @date    2024-03-25
   * @brief   操作图形显示缓冲区数据结构的工具库
   ******************************************************************************
@@ -32,6 +32,14 @@ void Graphic_Buffer_WriteXY(Graphic_Buffer*Graphic_Buffer_ptr,X_Data X,Y_Data Y,
 	if(val)*(((uint8_t*)Graphic_Buffer_ptr->DisplayBuf) + p.Page*Graphic_Buffer_ptr->Buffer_Page + p.Col) |= (1 << p.Bias);
 	else *(((uint8_t*)Graphic_Buffer_ptr->DisplayBuf) + p.Page*Graphic_Buffer_ptr->Buffer_Page + p.Col) &= (1 << p.Bias);
 }
+void Graphic_Buffer_SetXY(Graphic_Buffer*Graphic_Buffer_ptr,X_Data X,Y_Data Y){
+	Buffer_Point p = XY_toPointPage(X,Y);
+	*(((uint8_t*)Graphic_Buffer_ptr->DisplayBuf) + p.Page*Graphic_Buffer_ptr->Buffer_Page + p.Col) |= (1 << p.Bias);
+}
+void Graphic_Buffer_ResetXY(Graphic_Buffer*Graphic_Buffer_ptr,X_Data X,Y_Data Y){
+	Buffer_Point p = XY_toPointPage(X,Y);
+	*(((uint8_t*)Graphic_Buffer_ptr->DisplayBuf) + p.Page*Graphic_Buffer_ptr->Buffer_Page + p.Col) &= (1 << p.Bias);
+}
 bool Graphic_Buffer_ReadXY(Graphic_Buffer*Graphic_Buffer_ptr,X_Data X,Y_Data Y){
 	Buffer_Point p = XY_toPointPage(X,Y);
 	return *(((uint8_t*)Graphic_Buffer_ptr->DisplayBuf) + p.Page*Graphic_Buffer_ptr->Buffer_Page + p.Col) &= (0x01 << p.Bias);
@@ -50,6 +58,14 @@ void Graphic_Buffer_WritePoint(Graphic_Buffer*Graphic_Buffer_ptr,Graphic_Point X
 	Buffer_Point p = PointXY_to_PointPage(XY);
 	if(val)*(((uint8_t*)Graphic_Buffer_ptr->DisplayBuf) + p.Page*Graphic_Buffer_ptr->Buffer_Page + p.Col) |= (1 << p.Bias);
 	else *(((uint8_t*)Graphic_Buffer_ptr->DisplayBuf) + p.Page*Graphic_Buffer_ptr->Buffer_Page + p.Col) &= (1 << p.Bias);
+}
+void Graphic_Buffer_SetPoint(Graphic_Buffer*Graphic_Buffer_ptr,Graphic_Point XY){
+	Buffer_Point p = PointXY_to_PointPage(XY);
+	*(((uint8_t*)Graphic_Buffer_ptr->DisplayBuf) + p.Page*Graphic_Buffer_ptr->Buffer_Page + p.Col) |= (1 << p.Bias);
+}
+void Graphic_Buffer_ResetPoint(Graphic_Buffer*Graphic_Buffer_ptr,Graphic_Point XY){
+	Buffer_Point p = PointXY_to_PointPage(XY);
+	*(((uint8_t*)Graphic_Buffer_ptr->DisplayBuf) + p.Page*Graphic_Buffer_ptr->Buffer_Page + p.Col) &= (1 << p.Bias);
 }
 bool Graphic_Buffer_ReadPoint(Graphic_Buffer*Graphic_Buffer_ptr,Graphic_Point XY){
 	Buffer_Point p = PointXY_to_PointPage(XY);
