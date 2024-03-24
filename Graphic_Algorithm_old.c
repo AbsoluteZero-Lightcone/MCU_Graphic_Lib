@@ -7,7 +7,7 @@
   * @brief   江协科技图形显示算法层
   ******************************************************************************
   */
-#include "Graphic.h"
+#include "Graphic_old.h"
 #include "Graphic_Algorithm_old.h"
 #include "Graphic_Math_old.h"
 #include "Graphic_Data_old.h"

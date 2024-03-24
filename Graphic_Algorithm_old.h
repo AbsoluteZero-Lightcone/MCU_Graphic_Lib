@@ -10,7 +10,7 @@
 
 #ifndef __GRAPHIC_ALGORITHM_OLD_H
 #define __GRAPHIC_ALGORITHM_OLD_H
-#include "Graphic.h"
+#include "Graphic_old.h"
 
 /*参数宏定义*********************/
 

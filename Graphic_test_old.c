@@ -7,7 +7,7 @@
   * @brief   图形显示库测试环境
   ******************************************************************************
   */
-#include "Graphic.h"
+#include "Graphic_old.h"
 #include "SSD1306_Driver_old.h"
 #include "74HC138.h"
 

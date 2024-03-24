@@ -10,8 +10,8 @@
 
 #ifndef __GRAPHIC_TEST_OLD_H
 #define __GRAPHIC_TEST_OLD_H
-#include "Graphic.h"
-#include "SSD1306_Driver.h"
+#include "Graphic_old.h"
+#include "SSD1306_Driver_old.h"
 #include "74HC138.h"
 
 
