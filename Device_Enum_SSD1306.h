@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    Device_Enum_SSD1306.h
   * @author  Lightcone
-  * @version V1.1.3
+  * @version V1.1.4
   * @date    2024-03-25
   * @brief   图形设备枚举
   ******************************************************************************
@@ -22,8 +22,8 @@ typedef enum{
 	Enum_SSD1306_MAX
 }Enum_SSD1306;
 
-extern SSD1306 Hardware_Graphic_Device_SSD1306[Enum_SSD1306_MAX];
-extern Graphic_Object SSD1306_List[Enum_SSD1306_MAX];
+extern SSD1306        Hardware_Graphic_Device_SSD1306[Enum_SSD1306_MAX]; // 硬件对象
+extern Graphic_Object SSD1306_List[Enum_SSD1306_MAX];                    // 接口对象
 
 void Graphic_SSD1306_Init(void);
 

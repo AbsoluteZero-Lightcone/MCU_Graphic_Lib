@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    Graphic.h
   * @author  Lightcone
-  * @version V1.3.4
-  * @date    2024-03-24
+  * @version V1.3.5
+  * @date    2024-03-25
   * @brief   图形显示库
   ******************************************************************************
   */
@@ -24,13 +24,6 @@ typedef uint8_t Bias_Data;
 typedef uint8_t bool;
 typedef uint8_t Count;
 typedef uint8_t Device_Enum_Data;
-
-// 点对象存储结构
-typedef struct{
-	Col_Data Col;
-	Page_Data Page;
-	Bias_Data Bias; // 0~7
-}Buffer_Point;
 
 // 实际画布点对象
 typedef struct{

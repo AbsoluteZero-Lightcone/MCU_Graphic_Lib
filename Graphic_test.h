@@ -11,8 +11,6 @@
 #ifndef __GRAPHIC_TEST_H
 #define __GRAPHIC_TEST_H
 #include "Graphic.h"
-#include "Device_Driver_SSD1306.h"
-#include "74HC138.h"
 
 
 #endif /* __GRAPHIC_TEST_H */

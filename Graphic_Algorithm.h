@@ -2,15 +2,21 @@
   ******************************************************************************
   * @file    Graphic_Algorithm.h
   * @author  Lightcone
-  * @version V1.0.2
-  * @date    2024-03-22
-  * @brief   基于显示缓冲区数据结构的图形显示算法层
+  * @version V1.0.3
+  * @date    2024-03-25
+  * @brief   图形显示算法层，操作图形接口Graphic_Object的显示缓冲区数据结构
   ******************************************************************************
   */
-
 #ifndef __GRAPHIC_ALGORITHM_H
 #define __GRAPHIC_ALGORITHM_H
 #include "Graphic.h"
+
+// 点对象存储结构
+typedef struct{
+	Col_Data Col;
+	Page_Data Page;
+	Bias_Data Bias; // 0~7
+}Buffer_Point;
 
 #define Graphic_Draw_Line(Graphic_ptr,P1,P2)\
         Graphic_Draw_Line_DDA(Graphic_ptr,P1,P2)// 默认直线实现算法选择
