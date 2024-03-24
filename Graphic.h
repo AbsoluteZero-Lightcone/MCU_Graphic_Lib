@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    Graphic.h
   * @author  Lightcone
-  * @version V1.3.2
+  * @version V1.3.3
   * @date    2024-03-24
   * @brief   图形显示库
   ******************************************************************************
@@ -12,7 +12,6 @@
 #define __GRAPHIC_H
 
 #include <stdint.h>
-#include "Device_Enum_Graphic.h"
 
 #define BIT_PER_PAGE 8
 
@@ -69,7 +68,7 @@ typedef struct{
 // 可选功能接口函数：
 	void (*Hardware_Update_Callback)(Device_Enum_Data Device_Enum);
 	void (*Hardware_Clear_Callback)(Device_Enum_Data Device_Enum);
-	// 还可扩展更多基本接口
+	// 还可扩展更多硬件加速接口
 	}Graphic_Object;
 
 #endif /* __GRAPHIC_H */

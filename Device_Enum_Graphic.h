@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    Device_Enum_Graphic.h
   * @author  Lightcone
-  * @version V1.0.3
-  * @date    2024-03-22
+  * @version V1.1.0
+  * @date    2024-03-25
   * @brief   图形设备枚举
   ******************************************************************************
   */
@@ -12,14 +12,6 @@
 #define __DEVICE_ENUM_GRAPHIC_H
 #include "Graphic.h"
 
-typedef const enum{
-	Enum_SSD1306_1,
-	Enum_SSD1306_2,
-	Enum_SSD1306_3,
-	Enum_SSD1306_4,
-	Enum_SSD1306_x,
-	Enum_SSD1306_MAX
-}Enum_SSD1306;
 typedef const enum{
 	Enum_x_1,
 	Enum_x_2,
