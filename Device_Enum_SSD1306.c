@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    Device_Enum_SSD1306.c
   * @author  Lightcone
-  * @version V1.1.2
+  * @version V1.1.3
   * @date    2024-03-25
   * @brief   图形设备枚举
   ******************************************************************************
@@ -115,4 +115,11 @@ __weak void SSD1306_Hardware_Clear_Callback(Device_Enum_Data Device_Enum){
 	SSD1306_List[Device_Enum].Hardware_Update_Callback(Device_Enum);
 }
 
+
+void Graphic_SSD1306_Init(void){
+	_74HC138_Init(&Graphic_Device_SSD1306_CS_74HC138);
+	for(Device_Enum_Data i = 0 ; i < Enum_SSD1306_MAX; i++){
+		SSD1306_Init(&Hardware_Graphic_Device_SSD1306[i]);
+	}
+}
 /******************* Absolute Zero Studio - Lightcone **********END OF FILE****/

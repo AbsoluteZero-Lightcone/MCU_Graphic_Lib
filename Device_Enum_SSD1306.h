@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    Device_Enum_SSD1306.h
   * @author  Lightcone
-  * @version V1.1.2
+  * @version V1.1.3
   * @date    2024-03-25
   * @brief   图形设备枚举
   ******************************************************************************
@@ -25,6 +25,7 @@ typedef enum{
 extern SSD1306 Hardware_Graphic_Device_SSD1306[Enum_SSD1306_MAX];
 extern Graphic_Object SSD1306_List[Enum_SSD1306_MAX];
 
+void Graphic_SSD1306_Init(void);
 
 #endif /* __DEVICE_ENUM_SSD1306_H */
 /******************* Absolute Zero Studio - Lightcone **********END OF FILE****/
