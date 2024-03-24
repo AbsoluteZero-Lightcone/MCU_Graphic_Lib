@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    Graphic.h
   * @author  Lightcone
-  * @version V1.1.4
+  * @version V1.2.0
   * @date    2024-03-24
   * @brief   图形显示库
   ******************************************************************************
@@ -43,7 +43,7 @@ typedef struct{
   * @brief  显示缓冲区结构体
   */
 typedef struct{
-	uint8_t **  DisplayBuf; // 指向实际创建出的显示缓冲区的内存存储区域
+	uint8_t * DisplayBuf; // 指向实际创建出的显示缓冲区的内存存储区域
 	X_Data Screen_X;
 	Y_Data Screen_Y;
 	Page_Data Buffer_Page;

@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    Device_Enum_Graphic.c
   * @author  Lightcone
-  * @version V1.0.5
+  * @version V1.0.6
   * @date    2024-03-22
   * @brief   图形设备枚举
   ******************************************************************************
@@ -21,14 +21,14 @@ Graphic_Buffer Buffer_List_x[Enum_SSD1306_MAX];
 
 void Graphic_Buffer_Init(){
 	for(uint8_t i = 0 ; i < Enum_SSD1306_MAX;i++){
-		Buffer_List_SSD1306[i].DisplayBuf  = (uint8_t **)DisplayBuf_Graphic_Device_SSD1306[i],
+		Buffer_List_SSD1306[i].DisplayBuf  = (uint8_t *)DisplayBuf_Graphic_Device_SSD1306[i],
 		Buffer_List_SSD1306[i].Screen_X    = 128 ;
 		Buffer_List_SSD1306[i].Screen_Y    = 64  ;
 		Buffer_List_SSD1306[i].Buffer_Page = 8   ;
 		Buffer_List_SSD1306[i].Buffer_Col  = 128 ;
 	}
 	for(uint8_t i = 0 ; i < Enum_x_MAX;i++){
-		Buffer_List_x[i].DisplayBuf  = (uint8_t **)DisplayBuf_Graphic_Device_x[i],
+		Buffer_List_x[i].DisplayBuf  = (uint8_t *)DisplayBuf_Graphic_Device_x[i],
 		Buffer_List_x[i].Screen_X    = 128 ;
 		Buffer_List_x[i].Screen_Y    = 64  ;
 		Buffer_List_x[i].Buffer_Page = 8   ;

@@ -12,7 +12,7 @@
 // 缓冲区定义例程
 uint8_t SharingBufferMem[8][128];
 Graphic_Buffer SharingBuffer = {
-	.DisplayBuf = (uint8_t **)SharingBufferMem,
+	.DisplayBuf = (uint8_t *)SharingBufferMem,
 	.Screen_X = 128,
 	.Screen_Y = 64,
 	.Buffer_Page = 64/BIT_PER_PAGE,
