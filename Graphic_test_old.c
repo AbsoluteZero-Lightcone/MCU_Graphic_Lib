@@ -2,13 +2,13 @@
   ******************************************************************************
   * @file    Graphic_test_old.c
   * @author  Lightcone
-  * @version V1.0.4
-  * @date    2024-03-22
+  * @version V1.0.5
+  * @date    2024-03-24
   * @brief   图形显示库测试环境
   ******************************************************************************
   */
 #include "Graphic.h"
-#include "SSD1306_Driver.h"
+#include "SSD1306_Driver_old.h"
 #include "74HC138.h"
 
 /** @defgroup STM32F103C_Dev_Board_V1 Pin Config

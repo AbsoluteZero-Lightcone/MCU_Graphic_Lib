@@ -2,13 +2,13 @@
   ******************************************************************************
   * @file    SSD1306_Driver_old.c
   * @author  Lightcone & 江协科技
-  * @version V2.0.4
+  * @version V2.0.5
   * @date    2024-03-24
   * @brief   OLED SSD1306硬件驱动层
   ******************************************************************************
   */
 #include "STM32Device.h"
-#include "SSD1306_Driver.h"
+#include "SSD1306_Driver_old.h"
 
 // SSD1306_Driver.c文件内部使用宏函数
 #define OLED_W_D0(x)		GPIO_WriteBit(SSD1306_Struct_ptr->D0_GPIO, SSD1306_Struct_ptr->D0_Pin, (BitAction)(x))
@@ -29,7 +29,7 @@
 
 
 /*引脚初始化*/
-void SSD1306_Pin_Init(SSD1306* SSD1306_Struct_ptr)
+void OLED_Pin_Init(SSD1306* SSD1306_Struct_ptr)
 {
 	RCC_APB2PeriphClockCmd(to_RCC_APB2Periph(SSD1306_Struct_ptr->D0_GPIO), ENABLE);
 	RCC_APB2PeriphClockCmd(to_RCC_APB2Periph(SSD1306_Struct_ptr->D1_GPIO), ENABLE);
@@ -228,9 +228,9 @@ void OLED_Clear_RAW(SSD1306* SSD1306_Struct_ptr)
   * 返 回 值：无
   * 说    明：使用前，需要调用此初始化函数
   */
-void SSD1306_Init(SSD1306* SSD1306_Struct_ptr)
+void OLED_Init_old(SSD1306* SSD1306_Struct_ptr)
 {
-	SSD1306_Pin_Init(SSD1306_Struct_ptr);			//先调用底层的端口初始化
+	OLED_Pin_Init(SSD1306_Struct_ptr);			//先调用底层的端口初始化
 	
 	/*写入一系列的命令，对OLED进行初始化配置*/
 	OLED_WriteCommand(0xAE);	//设置显示开启/关闭，0xAE关闭，0xAF开启

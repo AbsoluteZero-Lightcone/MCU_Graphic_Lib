@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    Device_Enum_Graphic.c
   * @author  Lightcone
-  * @version V1.0.6
-  * @date    2024-03-22
+  * @version V1.0.7
+  * @date    2024-03-24
   * @brief   图形设备枚举
   ******************************************************************************
   */
@@ -35,6 +35,9 @@ Graphic_Object SSD1306_List[Enum_SSD1306_MAX] = {
 		.Hardware_Clear_Callback      = SSD1306_Hardware_Clear_Callback,
 	}
 };
+void SSD1306_Hardware_UpdateArea_Callback(Device_Enum_Data Device_Enum,uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height){
+}
+
 // 若硬件抽象层未实现全局刷新功能，则使用下面的默认方案：
 __weak void SSD1306_Hardware_Update_Callback(Device_Enum_Data Device_Enum){
 	SSD1306_List[Device_Enum].Hardware_UpdateArea_Callback(Device_Enum,0,0,SSD1306_List[Device_Enum].Buffer.Screen_X,SSD1306_List[Device_Enum].Buffer.Screen_Y);
