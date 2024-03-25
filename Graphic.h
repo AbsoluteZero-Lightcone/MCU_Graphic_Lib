@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    Graphic.h
   * @author  Lightcone
-  * @version V1.3.6
+  * @version V1.3.7
   * @date    2024-03-25
   * @brief   图形显示库
   ******************************************************************************
@@ -62,5 +62,7 @@ typedef struct{
 	// 还可扩展更多硬件加速接口
 	}Graphic_Object;
 
+#include "Device_Enum_SSD1306.h"
+#include "Graphic_Algorithm.h"
 #endif /* __GRAPHIC_H */
 /******************* Absolute Zero Studio - Lightcone **********END OF FILE****/

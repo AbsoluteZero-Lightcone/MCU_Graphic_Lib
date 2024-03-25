@@ -2,9 +2,9 @@
   ******************************************************************************
   * @file    Graphic_Algorithm.c
   * @author  Lightcone
-  * @version V1.0.5
+  * @version V1.1.0
   * @date    2024-03-25
-  * @brief   图形显示算法层，操作图形接口Graphic_Object的显示缓冲区数据结构
+  * @brief   图形显示算法层，操作显示缓冲区数据结构
   ******************************************************************************
   */
 #include "Graphic.h"
@@ -17,18 +17,18 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#define DrawPoint(x,y) Graphic_Buffer_SetXY(&Graphic_ptr->Buffer,x,y)
-#define ErasePoint(x,y) Graphic_Buffer_ResetXY(&Graphic_ptr->Buffer,x,y)
-#define Draw(xy) Graphic_Buffer_SetPoint(&Graphic_ptr->Buffer,xy)
-#define Erase(xy) Graphic_Buffer_ResetPoint(&Graphic_ptr->Buffer,xy)
+#define DrawPoint(x,y) Graphic_Buffer_SetXY(Graphic_Buffer_ptr,x,y)
+#define ErasePoint(x,y) Graphic_Buffer_ResetXY(Graphic_Buffer_ptr,x,y)
+#define Draw(xy) Graphic_Buffer_SetPoint(Graphic_Buffer_ptr,xy)
+#define Erase(xy) Graphic_Buffer_ResetPoint(Graphic_Buffer_ptr,xy)
 
-void Graphic_Draw_Line_DDA(Graphic_Object*Graphic_ptr,Graphic_Point P1,Graphic_Point P2){
+void Buffer_Draw_Line_DDA(Graphic_Buffer*Graphic_Buffer_ptr,Graphic_Point P1,Graphic_Point P2){
 	
 }
-void Graphic_Draw_Line_TMP(Graphic_Object*Graphic_ptr,Graphic_Point P1,Graphic_Point P2){
+void Buffer_Draw_Line_TMP(Graphic_Buffer*Graphic_Buffer_ptr,Graphic_Point P1,Graphic_Point P2){
 	
 }
-void Graphic_Draw_Line_Bresenham(Graphic_Object*Graphic_ptr,Graphic_Point P1,Graphic_Point P2){
+void Buffer_Draw_Line_Bresenham(Graphic_Buffer*Graphic_Buffer_ptr,Graphic_Point P1,Graphic_Point P2){
 	if (P1.y == P2.y){//横线
 		if (P1.x < P2.x) for(X_Data x = P1.x; x <= P2.x; x++)DrawPoint(x,P1.y);
 		else             for(X_Data x = P2.x; x <= P1.x; x++)DrawPoint(x,P1.y);
@@ -103,6 +103,26 @@ void Graphic_Draw_Line_Bresenham(Graphic_Object*Graphic_ptr,Graphic_Point P1,Gra
 
 
 
+void Buffer_Draw_Polygon(Graphic_Buffer*Graphic_Buffer_ptr,Graphic_Point* Points,Count cnt){
+	for(Count i = 0 ; i < cnt ; i++){
+		Buffer_Draw_Line(Graphic_Buffer_ptr,Points[i],Points[(i+1)%cnt]);
+	}
+}
+
+
+
+void Graphic_Draw_Line_DDA(Graphic_Object*Graphic_ptr,Graphic_Point P1,Graphic_Point P2){
+	Buffer_Draw_Line_DDA(&Graphic_ptr->Buffer,P1,P2);
+	Graphic_ptr->Hardware_Update_Callback(Graphic_ptr->Device_Enum);
+}
+void Graphic_Draw_Line_TMP(Graphic_Object*Graphic_ptr,Graphic_Point P1,Graphic_Point P2){
+	Buffer_Draw_Line_TMP(&Graphic_ptr->Buffer,P1,P2);
+	Graphic_ptr->Hardware_Update_Callback(Graphic_ptr->Device_Enum);
+}
+void Graphic_Draw_Line_Bresenham(Graphic_Object*Graphic_ptr,Graphic_Point P1,Graphic_Point P2){
+	Buffer_Draw_Line_Bresenham(&Graphic_ptr->Buffer,P1,P2);
+	Graphic_ptr->Hardware_Update_Callback(Graphic_ptr->Device_Enum);
+}
 void Graphic_Draw_Polygon(Graphic_Object*Graphic_ptr,Graphic_Point* Points,Count cnt){
 	for(Count i = 0 ; i < cnt ; i++){
 		Graphic_Draw_Line(Graphic_ptr,Points[i],Points[(i+1)%cnt]);
