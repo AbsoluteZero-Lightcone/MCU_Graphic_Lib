@@ -13,15 +13,6 @@
 #include "Graphic.h"
 #include "Device_Driver_SSD1306.h"
 
-typedef enum{
-	Enum_SSD1306_1,
-	Enum_SSD1306_2,
-	Enum_SSD1306_3,
-	Enum_SSD1306_4,
-	Enum_SSD1306_x,
-	Enum_SSD1306_MAX
-}Enum_SSD1306;
-
 extern SSD1306        Hardware_Graphic_Device_SSD1306[Enum_SSD1306_MAX]; // 硬件对象
 extern Graphic_Object SSD1306_List[Enum_SSD1306_MAX];                    // 接口对象
 

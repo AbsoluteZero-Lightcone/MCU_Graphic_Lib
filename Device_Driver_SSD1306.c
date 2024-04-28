@@ -13,7 +13,7 @@
 // Device_Driver_SSD1306.c文件内部使用宏函数
 #define SSD1306_Write_D0(x)		GPIO_WriteBit(SSD1306_Struct_ptr->D0_GPIO, SSD1306_Struct_ptr->D0_Pin, (BitAction)(x))
 #define SSD1306_Write_D1(x)		GPIO_WriteBit(SSD1306_Struct_ptr->D1_GPIO, SSD1306_Struct_ptr->D1_Pin, (BitAction)(x))
-#define SSD1306_Write_RES(x)		GPIO_WriteBit(SSD1306_Struct_ptr->RES_GPIO, SSD1306_Struct_ptr->RES_Pin, (BitAction)(x))
+#define SSD1306_Write_RES(x)	GPIO_WriteBit(SSD1306_Struct_ptr->RES_GPIO, SSD1306_Struct_ptr->RES_Pin, (BitAction)(x))
 #define SSD1306_Write_DC(x)		GPIO_WriteBit(SSD1306_Struct_ptr->DC_GPIO, SSD1306_Struct_ptr->DC_Pin, (BitAction)(x))
 #define SSD1306_Write_CS(x)		SSD1306_Struct_ptr->CS_Handler(SSD1306_Struct_ptr->Device_Enum)
 
@@ -22,9 +22,7 @@ void SSD1306_Pin_Init(SSD1306* SSD1306_Struct_ptr){
 	RCC_APB2PeriphClockCmd(to_RCC_APB2Periph(SSD1306_Struct_ptr->D1_GPIO), ENABLE);
 	RCC_APB2PeriphClockCmd(to_RCC_APB2Periph(SSD1306_Struct_ptr->RES_GPIO), ENABLE);
 	RCC_APB2PeriphClockCmd(to_RCC_APB2Periph(SSD1306_Struct_ptr->DC_GPIO), ENABLE);
-	//RCC_APB2PeriphClockCmd(to_RCC_APB2Periph(SSD1306_Struct_ptr->CS_GPIO), ENABLE);
 
-	
 	GPIO_InitTypeDef GPIO_InitStructure;
  	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
@@ -35,10 +33,6 @@ void SSD1306_Pin_Init(SSD1306* SSD1306_Struct_ptr){
  	GPIO_Init(SSD1306_Struct_ptr->D1_GPIO, &GPIO_InitStructure);
 	GPIO_InitStructure.GPIO_Pin = SSD1306_Struct_ptr->DC_Pin;
  	GPIO_Init(SSD1306_Struct_ptr->DC_GPIO, &GPIO_InitStructure);
-	/*
-	GPIO_InitStructure.GPIO_Pin = SSD1306_Struct_ptr->CS_Pin;
- 	GPIO_Init(SSD1306_Struct_ptr->CS_GPIO, &GPIO_InitStructure);
-	*/
 	GPIO_InitStructure.GPIO_Pin = SSD1306_Struct_ptr->RES_Pin;
  	GPIO_Init(SSD1306_Struct_ptr->RES_GPIO, &GPIO_InitStructure);
 	
@@ -48,9 +42,7 @@ void SSD1306_Pin_Init(SSD1306* SSD1306_Struct_ptr){
 	SSD1306_Write_RES(0);
 	SSD1306_Write_RES(1);
 	SSD1306_Write_DC(1);
-	//SSD1306_Write_CS(SSD1306_Struct_ptr,(BitAction)1);
 }
-
 
 
 /**
@@ -212,7 +204,7 @@ void SSD1306_Init(SSD1306* SSD1306_Struct_ptr){
 
 	SSD1306_WriteCommand(SSD1306_Struct_ptr,0xAF);	//开启显示
 	
-	SSD1306_Clear(SSD1306_Struct_ptr);				//清空显存数组，防止初始化后未显示内容时花屏
+	//SSD1306_Clear(SSD1306_Struct_ptr);				//清空显存数组，防止初始化后未显示内容时花屏
 	SSD1306_Update(SSD1306_Struct_ptr);				//更新显示，清屏
 }
 
