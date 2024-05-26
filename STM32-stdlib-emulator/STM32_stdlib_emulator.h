@@ -12,11 +12,9 @@
 
 #define MCU_STM32F103C
 #define STM32F10X_LD
+#define USE_STDPERIPH_DRIVER
+#define __CC_ARM
 
-#include <stdint.h>
-#include <stdio.h>
-#include "Pin_Config.h"
-
-
+void __dsb(int);
 
 #endif /* __STM32_STDLIB_EMULATOR_H */

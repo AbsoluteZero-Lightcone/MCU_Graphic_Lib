@@ -8,12 +8,10 @@
   ******************************************************************************
   */
 
-#include "STM32_stdlib_emulator.h"
 #include "Graphic.h"
 #include <stdio.h>
 
-int main(void)
-{
+int main(void){
     printf("Hello, World!\n");
     return 0;
 }

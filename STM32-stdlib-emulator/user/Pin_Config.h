@@ -10,7 +10,7 @@
 #ifndef __PIN_CONFIG_H
 #define __PIN_CONFIG_H
 
-#include "STM32Device.h"
+#include "MCU_STM32F103C.h"
 
 
 void DisableJTRST(void);

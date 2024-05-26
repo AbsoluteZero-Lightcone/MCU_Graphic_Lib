@@ -9,14 +9,15 @@
         "device_enum_ssd1306.h": "c",
         "graphic_algorithm.h": "c",
         "stm32f10x.h": "c",
-        "pin_config.h": "c"
+        "pin_config.h": "c",
+        "mcu_stm32f103c.h": "c"
     },
     "C_Cpp.default.browse.path": [],
     "C_Cpp.default.compilerPath": "",
     "code-runner.executorMap": {
         "javascript": "node",
         "java": "cd $dir && javac $fileName && java $fileNameWithoutExt",
-        "c": "cd $dir && gcc $fileName -o $fileNameWithoutExt -I ./Graphic -I ./STM32-stdlib-emulator -I ./STM32-stdlib-emulator/stdlib -I ./STM32-stdlib-emulator/user -I ./Graphic_Hardware -I ./Graphic_Database -I ./Graphic_Examples -I ./Graphic_Memory -I ./Graphic_Utilities -I ./Graphic_Rendering && $dir$fileNameWithoutExt && $dir$fileNameWithoutExt",
+        "c": "cd $dir && gcc $fileName -o $fileNameWithoutExt -I ./Graphic -I ./STM32-stdlib-emulator -I ./STM32-stdlib-emulator/stdlib -I ./STM32-stdlib-emulator/user -I ./Graphic_Hardware -I ./Graphic_Database -I ./Graphic_Examples -I ./Graphic_Memory -I ./Graphic_Utilities -I ./Graphic_Rendering && $dir$fileNameWithoutExt",
         "zig": "zig run",
         "cpp": "cd $dir && g++ $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
         "objective-c": "cd $dir && gcc -framework Cocoa $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
