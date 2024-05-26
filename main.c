@@ -8,7 +8,8 @@
   ******************************************************************************
   */
 
-#include "STM32-stdlib-emulator.h"
+#include "STM32_stdlib_emulator.h"
+#include "Graphic.h"
 #include <stdio.h>
 
 int main(void)
